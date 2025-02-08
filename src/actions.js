@@ -50,7 +50,7 @@ export async function getFilteredUsers(filters) {
 
 		return users;
 	} catch (error) {
-		console.error("Database error:", error);
+		console.error("Database error!!!:", error);
 		throw new Error(`Failed to get filtered users with filters: ${filters}`);
 	}
 }
