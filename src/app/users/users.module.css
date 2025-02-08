@@ -1,0 +1,6 @@
+.UsersGrid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, 10rem);
+	justify-content: center;
+}

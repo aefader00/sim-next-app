@@ -1,0 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@100..900&display=swap");
+
+html,
+body {
+	font-family: "Jost", serif;
+	margin: 0;
+}

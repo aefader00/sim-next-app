@@ -1,0 +1,40 @@
+.UserTable {
+	display: grid;
+
+	grid-template-columns: 1fr 3fr;
+}
+
+.UserImage {
+	padding: 1rem;
+}
+
+.UserImage img {
+	width: 100%;
+}
+
+.UserName {
+	margin: 0.25rem;
+
+	display: flex;
+
+	align-items: center;
+}
+
+.UserData {
+	list-style: none;
+	padding: 0;
+}
+
+.UserData label {
+	font-weight: bold;
+	font-size: 1.25rem;
+}
+
+.UserData textarea {
+	margin: 0.5rem;
+	display: flex;
+}
+
+.UserData p {
+	margin: 0.5rem;
+}

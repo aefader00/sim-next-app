@@ -1,0 +1,20 @@
+.UserCard {
+	border: 0.1rem solid black;
+	max-width: 10rem;
+	display: flex;
+	padding: 1rem;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+	background-color: white;
+}
+
+.UserCard img {
+	max-width: 8rem;
+	border-radius: 0.33rem;
+}
+
+.UserCard h3 {
+	margin: 0.5rem;
+	text-align: center;
+}

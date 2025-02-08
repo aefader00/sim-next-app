@@ -1,0 +1,39 @@
+.navbar {
+	color: white;
+	background-color: darkorange;
+
+	display: flex;
+	align-items: center;
+
+	justify-content: space-between;
+
+	margin: 0;
+	padding: 0;
+}
+
+.menu {
+	display: flex;
+}
+
+.menu a {
+	display: flex;
+	align-items: center;
+	padding: 1rem;
+}
+
+.menu a:hover {
+	background-color: orangered;
+	cursor: pointer;
+}
+
+.menu a:link {
+	text-decoration: none;
+}
+
+.menu a:visited {
+	color: white;
+}
+
+.menu img {
+	height: 3rem;
+}

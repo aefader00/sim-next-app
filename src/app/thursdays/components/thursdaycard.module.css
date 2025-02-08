@@ -1,0 +1,33 @@
+.ThursdayCard {
+	border: 0.1rem solid black;
+	border-radius: 0.33rem;
+	padding: 1rem;
+	background-color: white;
+}
+
+.ThursdayCard h1 {
+	margin: 0.75rem;
+}
+
+.GroupsTable {
+	border-radius: 0.33rem;
+	padding: 1rem;
+	display: grid;
+	gap: 1rem;
+	background-color: gainsboro;
+}
+
+.GroupsTable h2 {
+	margin: 0rem;
+}
+
+.GroupCard {
+	border: 0.1rem solid black;
+	border-radius: 0.33rem;
+	padding: 1rem;
+	background-color: white;
+}
+
+.GroupCard h3 {
+	margin: 0rem;
+}

@@ -1,0 +1,23 @@
+.ThursdaysGrid {
+	display: grid;
+	gap: 1rem;
+}
+
+.ThursdayData {
+	list-style: none;
+	padding: 0;
+}
+
+.ThursdayData label {
+	font-weight: bold;
+	font-size: 1.25rem;
+}
+
+.ThursdayData span {
+	margin: 0.5rem;
+	display: flex;
+}
+
+.ThursdayData p {
+	margin: 0.5rem;
+}
