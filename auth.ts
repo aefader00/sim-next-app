@@ -3,9 +3,6 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma";
 
-import { getAllSemesters } from "@/actions";
-const semesters = await getAllSemesters();
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter: PrismaAdapter(prisma),
 	providers: [Google],
@@ -15,6 +12,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			if (!account) {
 				console.error("Account is null or undefined");
 				return false; // Prevent further execution if account is invalid
+			}
+
+			var defaultSemester;
+			const firstSemester = await prisma.semester.findFirst({
+				include: { thursdays: { include: { groups: true } }, users: true, works: true },
+			});
+
+			if (firstSemester) {
+				defaultSemester = firstSemester;
+			} else {
+				defaultSemester = { id: "" };
 			}
 
 			const email = user.email as string;
@@ -51,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 								expires_at: account.expires_at,
 							},
 						},
-						semesters: { connect: { id: semesters[0].id } },
+						semesters: { connect: { id: defaultSemester.id } },
 					},
 				});
 			} catch (error) {
