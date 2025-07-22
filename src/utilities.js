@@ -16,6 +16,5 @@ export function formatNiceListFromArray(array) {
 		formattedNiceList = array.slice(0, -1).map((author) => <span key={`${author.key}:wrapper`}>{author}, </span>);
 		formattedNiceList.push(<span key={`${array[array.length - 1].key}:wrapper`}>and {array[array.length - 1]}</span>);
 	}
-
 	return <>{formattedNiceList}</>;
 }

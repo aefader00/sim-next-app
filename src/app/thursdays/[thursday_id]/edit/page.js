@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import ThursdayForm from "../../components/ThursdayForm";
+import ThursdayForm from "../../../../components/thursdays/ThursdayForm";
 
 import { getThursday, getAllGroups, getAllSemesters, editThursday } from "../../../../actions";
 

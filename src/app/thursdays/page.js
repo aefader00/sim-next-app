@@ -1,10 +1,10 @@
 import { ContentPage, ContentTable } from "../../components/contentpage";
 
-import styles from "./thursdays.module.css";
+import styles from "../../components/thursdays/thursdays.module.css";
 
 import { getFilteredThursdays } from "../../actions";
 
-import ThursdayCard from "./components/thursdaycard";
+import ThursdayCard from "../../components/thursdays/thursdaycard";
 
 export default async function Thursdays({ searchParams }) {
 	const filters = await searchParams;

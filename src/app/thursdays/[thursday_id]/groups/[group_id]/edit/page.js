@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import GroupForm from "../../components/groupform";
+import GroupForm from "../../../../../../components/thursdays/groups/GroupForm";
 
 import { getGroup, getAllUsers, getAllWorks, getAllSemesters, editGroup } from "../../../../../../actions";
 
@@ -36,13 +36,14 @@ export default async function EditGroup({ params }) {
 	return (
 		<div>
 			<h1>Edit Group</h1>
-			<GroupForm onSubmit={onSubmitEditGroup} group={group} thursday={group.thursday} users={users} works={works} thursdays={thursdays} />
+			<GroupForm onSubmit={onSubmitEditGroup} group={group} thursday={group.thursday} users={users} presentations={works} thursdays={thursdays} />
 		</div>
 	);
 }
 
 async function onSubmitEditGroup(data) {
 	"use server";
+	//	console.log("final data:", data);
 	editGroup(data);
-	redirect(`/thursdays/${data.thursday}`);
+	//redirect(`/thursdays/${data.thursday}`);
 }

@@ -1,4 +1,4 @@
-import GroupForm from "../components/groupform";
+import GroupForm from "../../../../../components/thursdays/groups/GroupForm";
 
 import { getAllUsers, getAllWorks, getAllSemesters, addGroup, getThursday } from "../../../../../actions";
 import { redirect } from "next/navigation";
@@ -30,7 +30,7 @@ export default async function AddGroup({ params }) {
 	return (
 		<div>
 			<h1>Add Group</h1>
-			<GroupForm onSubmit={onSubmitAddGroup} thursday={thursday} users={users} works={works} thursdays={thursdays} />
+			<GroupForm onSubmit={onSubmitAddGroup} thursday={thursday} users={users} presentations={works} thursdays={thursdays} />
 		</div>
 	);
 }
@@ -38,5 +38,5 @@ export default async function AddGroup({ params }) {
 async function onSubmitAddGroup(data) {
 	"use server";
 	addGroup(data);
-	redirect(`/thursdays/${data.thursday}`);
+	//redirect(`/thursdays/${data.thursday}`);
 }

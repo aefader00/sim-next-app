@@ -1,0 +1,91 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  accounts      Account[]
+  sessions      Session[]
+  name          String
+  image         String
+  username      String     @unique
+  admin         Boolean    @default(false)
+  presentations Work[]
+  productions   Group[]
+  semesters     Semester[]
+  about         String?
+}
+
+model Work {
+  id         String  @id @default(uuid())
+  name       String
+  image      String
+  about      String
+  presenters User[]
+  group_id   String?
+  group      Group?  @relation(fields: [group_id], references: [id])
+}
+
+model Group {
+  id            String    @id @default(uuid())
+  name          String
+  location      String
+  producers     User[]
+  presentations Work[]
+  thursday_id   String?
+  thursday      Thursday? @relation(fields: [thursday_id], references: [id])
+}
+
+model Thursday {
+  id          String    @id @default(uuid())
+  date        DateTime
+  name        String
+  groups      Group[]
+  semester_id String?
+  semester    Semester? @relation(fields: [semester_id], references: [id])
+}
+
+model Semester {
+  id        String     @id @default(uuid())
+  name      String
+  thursdays Thursday[]
+  users     User[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
