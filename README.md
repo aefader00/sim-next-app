@@ -1,12 +1,18 @@
 This is an internal website for the Studio for Interrelated Media department of the Massachusetts College of Art and Design.
 
+# History
+
+The first website for SIM was developed by Matt Karl.
+
+# Structure
+
 The important files and folders are…
 
 - src/app [Folder]: This folder is where the actual pages which the end users will view and interact with are.
 
 - /src/components [Folder]: Read this page if you are unfamiliar with React and what components are: https://reactjs.org/docs/components-and-props.html
 
-- /prisma [Folder]: This contains the Prisma schema, which defines the way in which we interact with the database through Prisma. It is important to understand Prisma and this schema before interacting with the database. Read this page to get started: https://www.prisma.io/docs/concepts/components/prisma-schema
+- /database [Folder]: This contains the Prisma schema, which defines the way in which we interact with the database through Prisma. It is important to understand Prisma and this schema before interacting with the database. Read this page to get started: https://www.prisma.io/docs/concepts/components/prisma-schema
 
 - /public [Folder]: This folder contains all media, including everything from images to the favicon. Everything in this folder is public, hence the name. While the files in Pages are rendered for the end user, their actual JavaScript is hidden. Do not put any sensitive information in this folder.
 
@@ -17,6 +23,100 @@ The important files and folders are…
 # Getting Started
 
 It is a [Next.js](https://nextjs.org) project. It is written in Javascript.
+
+### Get NPM
+
+If you don't have a way to download NPM, first get that.
+
+Download and install fnm:
+
+```
+curl -o- https://fnm.vercel.app/install | bash
+```
+
+### Download and install Node.js:
+
+```
+fnm install 22
+```
+
+### Verify the Node.js version:
+
+node -v # Should print "v22.17.1".
+
+### Download and install Yarn:
+
+corepack enable yarn
+
+### Verify Yarn version:
+
+yarn -v
+
+# Install Nginx
+
+```
+sudo apt install nginx
+```
+
+# Adjust firewall
+
+```
+sudo ufw app list
+```
+
+```
+sudo ufw allow 'Nginx HTTP' // (verify with "sudo ufw status")
+```
+
+# Install Nginx (cont'd)
+
+```
+sudo nano /etc/nginx/sites-available/sim
+```
+
+Write:
+
+```
+server {
+  listen 80;
+  server_name YOUR_IP_ADDRESS;
+  location / {
+    proxy_pass http://localhost:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
+```
+
+Create link
+
+```
+sudo ln -s /etc/nginx/sites-available/sim /etc/nginx/sites-enabled/
+```
+
+Check for errors:
+
+```
+sudo nginx -t
+```
+
+Run Nginx:
+
+```
+sudo service nginx restart
+```
+
+# Clone Git
+
+```
+cd /var/www
+git clone https://github.com/aefader00/sim-next-app.git sim
+```
+
+# Set up app
 
 ```
 yarn install

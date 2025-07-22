@@ -4,7 +4,7 @@ import "antd/dist/reset.css"; // Ensure styles load correctly
 import { auth } from "../../auth";
 import { SessionProvider } from "next-auth/react";
 
-import Navbar from "./navbar";
+import Navbar from "../components/navbar";
 
 import Welcome from "../components/welcome";
 

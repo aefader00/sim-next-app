@@ -1,5 +1,5 @@
 // import styles
-import styles from "./admin.module.css";
+import styles from "../../components/admin/admin.module.css";
 import Link from "next/link";
 import { getFilteredUsers, getAllSemesters, getSemesterFromName } from "../../actions";
 
@@ -23,8 +23,10 @@ export default async function Admin({ searchParams }) {
 			<div className={styles.ManageSemesters}>
 				<h1>
 					Manage Semesters
-					<AddContentButton href="/semesters/add" />
+					<AddContentButton href="admin/semesters/add" />
 				</h1>
+				Below are all of the semesters we have on record in our database. You can edit them individually, including which students are enrolled in it. You can
+				also remove them from the database.
 				<div style={{ margin: "0.5rem", backgroundColor: "lightgrey", borderRadius: "0.33rem", padding: "1rem" }}>
 					{semesters.map((semester) => {
 						let groups = 0;
@@ -35,9 +37,9 @@ export default async function Admin({ searchParams }) {
 						return (
 							<div className={styles.SemesterCard} key={semester.id}>
 								<h3 style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-									{semester.name} <LinkButton style={{ margin: "0rem" }} href={`./semesters/${semester.id}/edit`} value="✏️" />
+									{semester.name} <LinkButton style={{ margin: "0rem" }} href={`admin/semesters/${semester.id}/edit`} value="✏️" />
 								</h3>
-								<div>Students Enrolled: {semester.users.length}</div> <div>Works Made: {semester.works.length}</div> <div>Groups Produced: {groups}</div>{" "}
+								<div>Students Enrolled: {semester.users.length}</div> <div>Groups Produced: {groups}</div>{" "}
 								<div>Thursday Classes: {semester.thursdays.length}</div>
 							</div>
 						);
@@ -46,6 +48,12 @@ export default async function Admin({ searchParams }) {
 			</div>
 			<div className={styles.ManageStudents}>
 				<h1>Manage Students</h1>
+				<p>
+					Below are all of the students enrolled in the "{`${semester.name}`}" semester. You can edit each student's profile by clicking on the button next to
+					their name. The presentations tab lists how many times this student has presented throughout the whole semester up until the present. The productions
+					tab shows how many times this student has produced a group, sorted into two groups based on whetehr they producted it before or after halfway through
+					the semester.
+				</p>
 				<SearchBar semesters={semesters} />
 				<div style={{ margin: "0.5rem", backgroundColor: "lightgrey", borderRadius: "0.33rem", padding: "1rem" }}>
 					<div className={styles.StudentsTable}>
@@ -56,17 +64,26 @@ export default async function Admin({ searchParams }) {
 						<div className={styles.StudentsTableHeader}>Group Produced</div>
 
 						{users.map((user) => {
-							const worksFromSemester = user.works.filter((work) => work.semester_id === semester.id);
 							const groupsFromSemester = [];
 
 							semester.thursdays.map((thursday) => {
-								user.groups.map((group) => {
+								user.productions.map((group) => {
 									if (group.thursday_id === thursday.id) {
 										group.date = thursday.date;
 										groupsFromSemester.push(group);
 									}
 								});
 							});
+
+							const worksFromSemester = [];
+
+							user.presentations.map((work) =>
+								groupsFromSemester.map((group) => {
+									if (work.group_id === group.id) {
+										worksFromSemester.push(work);
+									}
+								})
+							);
 
 							const groupsBeforeMid = groupsFromSemester.slice(0, Math.ceil(groupsFromSemester.length / 2));
 							const groupsAfterMid = groupsFromSemester.slice(Math.ceil(groupsFromSemester.length / 2));
