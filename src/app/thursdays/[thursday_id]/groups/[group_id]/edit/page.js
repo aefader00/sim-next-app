@@ -45,5 +45,5 @@ async function onSubmitEditGroup(data) {
 	"use server";
 	//	console.log("final data:", data);
 	editGroup(data);
-	//redirect(`/thursdays/${data.thursday}`);
+	redirect(`/thursdays/${data.thursday}`);
 }

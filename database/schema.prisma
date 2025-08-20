@@ -15,6 +15,8 @@ model User {
   sessions      Session[]
   name          String
   image         String
+  pronouns      String
+  link          String
   username      String     @unique
   admin         Boolean    @default(false)
   presentations Work[]

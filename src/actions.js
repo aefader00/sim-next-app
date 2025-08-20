@@ -133,7 +133,7 @@ export async function getSemesterFromName(name) {
 
 	const semester = await prisma.semester.findFirst({
 		where: { name: { contains: name } },
-		include: { users: true, thursdays: { include: { groups: true } } },
+		include: { users: true, thursdays: { include: { groups: { include: { presentations: { include: { presenters: true } } } } } } },
 	});
 	return semester;
 }
@@ -162,10 +162,10 @@ export async function getGroup(id) {
 	return group;
 }
 
-export async function editUser({ id, name, about, image }) {
+export async function editUser({ id, name, about, image, email, link, pronouns }) {
 	return prisma.user.update({
 		where: { id },
-		data: { name, about, image },
+		data: { name, about, image, link, pronouns, email },
 	});
 }
 
@@ -178,6 +178,8 @@ export async function addUser(data) {
 				image: data.image,
 				name: data.name,
 				about: data.about?.trim() || "I'm new to SIM!",
+				link: data.link,
+				pronouns: data.pronouns,
 			},
 		});
 	} catch (error) {

@@ -8,6 +8,18 @@ async function main() {
 	await prisma.group.deleteMany();
 	await prisma.work.deleteMany();
 
+	await prisma.user.create({
+		data: {
+			name: "",
+			username: "",
+			email: "",
+			admin: true,
+			image: "/faces/default.jpg",
+			pronouns: "",
+			link: "",
+		},
+	});
+
 	await prisma.semester.create({
 		data: {
 			name: "SP25",

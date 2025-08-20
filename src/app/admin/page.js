@@ -77,13 +77,18 @@ export default async function Admin({ searchParams }) {
 
 							const worksFromSemester = [];
 
-							user.presentations.map((work) =>
-								groupsFromSemester.map((group) => {
-									if (work.group_id === group.id) {
-										worksFromSemester.push(work);
-									}
-								})
-							);
+							semester.thursdays.map((thursday) => {
+								thursday.groups.map((group) => {
+									group.presentations.map((presentation) => {
+										presentation.presenters.map((presenter) => {
+											if (presenter.id === user.id) {
+												presentation.thursday_id = thursday.id;
+												worksFromSemester.push(presentation);
+											}
+										});
+									});
+								});
+							});
 
 							const groupsBeforeMid = groupsFromSemester.slice(0, Math.ceil(groupsFromSemester.length / 2));
 							const groupsAfterMid = groupsFromSemester.slice(Math.ceil(groupsFromSemester.length / 2));
@@ -99,9 +104,9 @@ export default async function Admin({ searchParams }) {
 									<span>
 										Total in the Semester: {worksFromSemester.length}
 										<ul>
-											{worksFromSemester.map((work) => (
-												<li key={`work.id:${work.id}`}>
-													<Link href={`/works/${work.id}`}> {work.name}</Link>
+											{worksFromSemester.map((presentation) => (
+												<li key={`presentation.id:${presentation.id}`}>
+													<Link href={`/thursdays/${presentation.thursday_id}`}> {presentation.name}</Link>
 												</li>
 											))}
 										</ul>
