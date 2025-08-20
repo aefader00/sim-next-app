@@ -40,13 +40,11 @@ curl -o- https://fnm.vercel.app/install | bash
 fnm install 22
 ```
 
-### Verify the Node.js version:
-
-node -v # Should print "v22.17.1".
+# YOU MUST HAVE NODE v18+ to use this app.
 
 ### Download and install Yarn:
 
-corepack enable yarn
+npm install --global yarn
 
 ### Verify Yarn version:
 
@@ -64,6 +62,8 @@ sudo apt install nginx
 sudo ufw app list
 ```
 
+You want to see a list of available applications: (list them)
+
 ```
 sudo ufw allow 'Nginx HTTP' // (verify with "sudo ufw status")
 ```
@@ -73,6 +73,8 @@ sudo ufw allow 'Nginx HTTP' // (verify with "sudo ufw status")
 ```
 sudo nano /etc/nginx/sites-available/sim
 ```
+
+FIND OUT WHAT OUR IP ADDRESS
 
 Write:
 
@@ -113,19 +115,28 @@ sudo service nginx restart
 
 ```
 cd /var/www
-git clone https://github.com/aefader00/sim-next-app.git sim
+sudo git clone https://github.com/aefader00/sim-next-app.git sim
 ```
+
+then go into that directory.
 
 # Set up app
 
 ```
-yarn install
+sudo yarn install
+
+```
+
+Add .env with this:
+
+```
+...
 ```
 
 First, run the development server:
 
 ```
-yarn run dev
+sudo yarn run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

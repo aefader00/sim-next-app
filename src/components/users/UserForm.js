@@ -15,8 +15,10 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 			action={(formData) => {
 				const data = {
 					name: formData.get("name"),
+					pronouns: formData.get("pronouns"),
 					image: imageFile || user?.image || null,
 					email: formData.get("email"),
+					link: formData.get("link"),
 					about: formData.get("about"),
 				};
 				if (user) {
@@ -31,6 +33,12 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 				<FormLabel>{user ? "Edit Name" : "Add Name"}</FormLabel>
 				<FormInput>
 					<Input name="name" defaultValue={user?.name} required />
+				</FormInput>
+			</div>
+			<div>
+				<FormLabel>{user ? "Edit Pronouns" : "Add Pronouns"}</FormLabel>
+				<FormInput>
+					<Input name="pronouns" defaultValue={user?.pronouns} />
 				</FormInput>
 			</div>
 			<div>
@@ -54,6 +62,14 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 						<i>Contact SIM faculty to change your email.</i>
 					</p>
 				)}
+			</div>
+			<div>
+				<FormLabel>
+					{user ? "Edit Link (to social media, gallery of your artwork, etc.)" : "Add Link (to social media, gallery of your artwork, etc.)"}
+				</FormLabel>
+				<FormInput>
+					<Input name="link" defaultValue={user?.link} />
+				</FormInput>
 			</div>
 			<div>
 				<FormLabel>{user ? "Edit About" : "Add About"}</FormLabel>

@@ -38,5 +38,5 @@ export default async function AddGroup({ params }) {
 async function onSubmitAddGroup(data) {
 	"use server";
 	addGroup(data);
-	//redirect(`/thursdays/${data.thursday}`);
+	redirect(`/thursdays/${data.thursday}`);
 }
