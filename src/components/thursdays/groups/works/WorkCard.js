@@ -9,6 +9,7 @@ export default function WorkCard({ work }) {
 			{author.name}
 		</Link>
 	));
+
 	return (
 		<div className={styles.WorkCard}>
 			<h3>

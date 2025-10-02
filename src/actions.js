@@ -109,6 +109,7 @@ export async function getFilteredWorks(filters) {
 export async function getUser(username) {
 	const user = await prisma.user.findFirst({
 		where: { username: username },
+		include: { presentations: { include: { presenters: true } }, productions: true },
 	});
 	return user;
 }
