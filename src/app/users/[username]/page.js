@@ -31,11 +31,11 @@ export default async function User({ params }) {
 				<hr />
 				<ul className={styles.UserData}>
 					<li>
-						<label>About</label> <p>{user.about.length > 0 ? user.about : "This user has not written an about yet..."}</p>
+						<label>About</label> <p>{user.about?.length > 0 ? user.about : "This user has not written an about yet..."}</p>
 					</li>
 					<li>
 						<label>Presentations</label>
-						{user.presentations.length > 0 ? (
+						{user.presentations?.length > 0 ? (
 							user.presentations?.map((work) => {
 								return <WorkCard key={work.id} work={work} />;
 							})

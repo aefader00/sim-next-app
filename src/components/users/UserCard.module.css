@@ -10,7 +10,10 @@
 }
 
 .UserCard img {
-	max-width: 8rem;
+	width: 8rem;
+	height: 8rem;
+	object-fit: cover; /* or 'contain' or 'fill' depending on behavior */
+
 	border-radius: 0.33rem;
 }
 
