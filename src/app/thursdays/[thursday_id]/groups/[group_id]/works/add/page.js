@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import WorkForm from "../../../../../../../components/thursdays/groups/works/WorkForm2";
+import WorkForm from "../../../../../../../components/thursdays/groups/works/WorkForm";
 
-import { getAllUsers, getAllGroups, getAllSemesters, addWork } from "../../../actions";
+import { getAllUsers, getAllGroups, getAllSemesters, addWork } from "../../../../../../../actions";
 
 export default async function AddWork() {
 	const users = await getAllUsers();

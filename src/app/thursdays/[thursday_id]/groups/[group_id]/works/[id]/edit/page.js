@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import WorkForm from "../../../../../../../../components/thursdays/groups/works/WorkForm2";
+import WorkForm from "../../../../../../../../components/thursdays/groups/works/WorkForm";
 
 import { getWork, getAllUsers, getAllGroups, getAllSemesters, editWork } from "../../../../actions";
 
