@@ -9,7 +9,9 @@
 }
 
 .UserImage img {
-	width: 100%;
+	width: 20rem;
+	height: 20rem;
+	object-fit: cover; /* or 'contain' or 'fill' depending on behavior */
 }
 
 .UserName {

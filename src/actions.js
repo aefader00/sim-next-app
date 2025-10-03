@@ -169,6 +169,9 @@ export async function editUser({ id, name, about, image, email, link, pronouns }
 }
 
 export async function addUser(data) {
+	const current_semester = await getAllSemesters();
+	console.log(current_semester[0].id);
+
 	try {
 		await prisma.user.create({
 			data: {
@@ -179,6 +182,7 @@ export async function addUser(data) {
 				about: data.about?.trim() || "I'm new to SIM!",
 				link: data.link,
 				pronouns: data.pronouns,
+				semesters: { connect: { id: current_semester[0].id } },
 			},
 		});
 	} catch (error) {
