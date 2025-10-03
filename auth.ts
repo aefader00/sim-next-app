@@ -7,15 +7,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter: PrismaAdapter(prisma),
 	providers: [
 		Google({
-			clientId: process.env.GOOGLE_CLIENT_ID!,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			clientId: process.env.AUTH_GOOGLE_ID!,
+			clientSecret: process.env.AUTH_GOOGLE_SECRET!,
 			authorization: {
 				params: {
-					scope: "openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly",
+					scope: "openid email profile",
 				},
 			},
 		}),
 	],
+
 	callbacks: {
 		async signIn({ user, account, profile }) {
 			// Add a check for account being non-null
@@ -38,6 +39,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			const email = user.email as string;
 
 			const isUserFound = await prisma.user.findFirst({ where: { email: email }, include: { accounts: true } });
+
+			if (isUserFound == null) {
+				return "/";
+			}
 
 			if (isUserFound?.accounts.length == 0) {
 				try {
