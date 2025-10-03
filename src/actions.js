@@ -11,8 +11,6 @@ import { prisma } from "./database";
 import { writeFile, mkdir, readdir, unlink } from "fs/promises";
 import path from "path";
 
-const facesDiretory = path.join(process.cwd(), "public/faces");
-
 export async function getFilteredUsers(filters) {
 	noStore();
 
@@ -184,13 +182,11 @@ export async function addUser(data) {
 			},
 		});
 	} catch (error) {
-		console.error("Failed to addUser. Payload:", data);
-		throw new Error("Failed to addUser");
+		throw new Error(error);
 	}
 }
 
 export async function handleImageUpload(file, filename, directory) {
-	console.log("pass! 2");
 	if (!file || !filename) return null;
 
 	const directory_path = path.join(process.cwd(), `public/${directory}`);
@@ -205,13 +201,9 @@ export async function handleImageUpload(file, filename, directory) {
 	const existing_files = await readdir(directory_path);
 	const matching_files = existing_files.filter((f) => f.startsWith(`${filename}.`));
 
-	console.log("pass! 3");
-
 	await Promise.all(matching_files.map((f) => unlink(path.join(directory_path, f))));
 
 	await writeFile(filepath, buffer);
-
-	console.log("pass! 4");
 
 	return `/${directory}/${filename_w_ext}`;
 }
@@ -225,8 +217,6 @@ export async function removeUser(data) {
 }
 
 export async function editGroup(data) {
-	console.log("data in editGroup:", data);
-
 	// Step 1: Update group basic info
 	await prisma.group.update({
 		where: { id: data.id },
@@ -249,8 +239,6 @@ export async function editGroup(data) {
 	const newPresentations = data.presentations.filter((p) => !p.id);
 	const existingPresentations = data.presentations.filter((p) => p.id);
 	const currentPresentationIds = existingPresentations.map((p) => p.id);
-
-	console.log("existingPresentations", existingPresentations);
 
 	// Step 4: Create new works
 	await Promise.all(
@@ -523,7 +511,6 @@ export async function addSemester(data) {
 }
 
 export async function addGroup(data) {
-	console.log("data: ", data);
 	try {
 		const group = await prisma.group.create({
 			data: {

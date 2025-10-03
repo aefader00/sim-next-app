@@ -43,7 +43,6 @@ export default async function EditGroup({ params }) {
 
 async function onSubmitEditGroup(data) {
 	"use server";
-	//	console.log("final data:", data);
 	editGroup(data);
 	redirect(`/thursdays/${data.thursday}`);
 }

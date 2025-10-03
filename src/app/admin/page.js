@@ -49,10 +49,10 @@ export default async function Admin({ searchParams }) {
 			<div className={styles.ManageStudents}>
 				<h1>Manage Students</h1>
 				<p>
-					Below are all of the students enrolled in the "{`${semester.name}`}" semester. You can edit each student's profile by clicking on the button next to
-					their name. The presentations tab lists how many times this student has presented throughout the whole semester up until the present. The productions
-					tab shows how many times this student has produced a group, sorted into two groups based on whetehr they producted it before or after halfway through
-					the semester.
+					Below are all of the students enrolled in the `&quot;`{`${semester.name}`}`&quot;` semester. You can edit the profile of each student by clicking on
+					the button next to their name. The presentations tab lists how many times this student has presented throughout the whole semester up until the
+					present. The productions tab shows how many times this student has produced a group, sorted into two groups based on whetehr they producted it before
+					or after halfway through the semester.
 				</p>
 				<SearchBar semesters={semesters} />
 				<div style={{ margin: "0.5rem", backgroundColor: "lightgrey", borderRadius: "0.33rem", padding: "1rem" }}>

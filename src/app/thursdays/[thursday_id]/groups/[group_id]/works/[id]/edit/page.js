@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 
 import WorkForm from "../../../../../../../../components/thursdays/groups/works/WorkForm";
 
-import { getWork, getAllUsers, getAllGroups, getAllSemesters, editWork } from "../../../../actions";
+import { getWork, getAllUsers, getAllGroups, getAllSemesters, editWork } from "../../../../../../../../actions";
 
 export default async function EditWork({ params }) {
 	const { id } = await params;
