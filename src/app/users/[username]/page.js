@@ -31,6 +31,9 @@ export default async function User({ params }) {
 				<hr />
 				<ul className={styles.UserData}>
 					<li>
+						<label>Pronouns</label> <p>{user.pronouns?.length > 0 ? user.pronouns : "This user has not set their pronouns yet"}</p>
+					</li>
+					<li>
 						<label>About</label> <p>{user.about?.length > 0 ? user.about : "This user has not written an about yet..."}</p>
 					</li>
 					<li>
