@@ -5,7 +5,6 @@ import LinkButton from "../../../components/linkbutton";
 import WorkCard from "@/components/thursdays/groups/works/WorkCard";
 
 import styles from "../../../components/users/user.module.css";
-import Link from "next/link";
 
 export default async function User({ params }) {
 	// Get the user data of the user you are looking at.
@@ -17,8 +16,6 @@ export default async function User({ params }) {
 	// Get the user data of the user you are signed in as.
 	const currentUser = await getCurrentUser();
 	if (!currentUser) return;
-
-	console.log(user);
 
 	return (
 		<div className={styles.UserTable}>

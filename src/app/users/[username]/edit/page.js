@@ -25,7 +25,7 @@ export default async function EditUser({ params }) {
 			{currentUser.admin == true ? (
 				<div>
 					<h2>Remove User</h2>
-					<p>This permanently removes this user's data from the database altogether.</p>
+					<p>This permanently removes the data of this user from the database altogether.</p>
 					<p>
 						If you want to unlist this user from a semester but keep their data in the database, go to the admin dashboard and edit the semester that you want
 						to unlist this user from.
@@ -40,12 +40,9 @@ export default async function EditUser({ params }) {
 async function onSubmitEditUser(data) {
 	"use server";
 
-	console.log("data in onSubmitEditUser", data);
-
 	let image_path = null;
 
 	if (data.image && typeof data.image === "object") {
-		console.log("pass!");
 		image_path = await handleImageUpload(data.image, data.username, "faces");
 		data.image = image_path;
 	}

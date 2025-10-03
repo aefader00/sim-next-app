@@ -1,6 +1,5 @@
 import Link from "next/link";
 import styles from "./WorkCard.module.css";
-import EditContentButton from "../../../EditContentButton";
 import { formatNiceListFromArray } from "../../../../utilities";
 
 export default function WorkCard({ work }) {
