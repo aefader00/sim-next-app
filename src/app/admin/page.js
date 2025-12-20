@@ -47,7 +47,9 @@ export default async function Admin({ searchParams }) {
 				</div>
 			</div>
 			<div className={styles.ManageStudents}>
-				<h1>Manage Students</h1>
+				<h1>
+					Manage Students <AddContentButton href="users/add" />
+				</h1>
 				<p>
 					Below are all of the students enrolled in the `&quot;`{`${semester.name}`}`&quot;` semester. You can edit the profile of each student by clicking on
 					the button next to their name. The presentations tab lists how many times this student has presented throughout the whole semester up until the
