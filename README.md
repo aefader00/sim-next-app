@@ -1,173 +1,218 @@
-This is an internal website for the Studio for Interrelated Media department of the Massachusetts College of Art and Design.
+# The SIM website
+
+_This is the website of the Studio for Interrelated Media (SIM) program at the Massachusetts College for Art and Design (MassArt)._
 
 # History
 
 The first website for SIM was developed by Matt Karl.
 
-# Structure
+## The basics
 
-The important files and folders are…
+**What is this thing?**
 
-- src/app [Folder]: This folder is where the actual pages which the end users will view and interact with are.
+This is the website for the SIM program at MassArt. The purpose of the website is to help students find their classmates through a directory of names and faces, as well as to help faculty keep a record of each student's grades throughout the program.
 
-- /src/components [Folder]: Read this page if you are unfamiliar with React and what components are: https://reactjs.org/docs/components-and-props.html
+**The basic features are:**
 
-- /database [Folder]: This contains the Prisma schema, which defines the way in which we interact with the database through Prisma. It is important to understand Prisma and this schema before interacting with the database. Read this page to get started: https://www.prisma.io/docs/concepts/components/prisma-schema
+- A directory of names & faces of both students and faculty.
+- A calendar of Thursday class meeting times, locations, and agendas.
+- An admin dashboard to manage students and other data.
 
-- /public [Folder]: This folder contains all media, including everything from images to the favicon. Everything in this folder is public, hence the name. While the files in Pages are rendered for the end user, their actual JavaScript is hidden. Do not put any sensitive information in this folder.
+## Setup
 
-- .env [File]: This contains environment variables, such as the database URL.
+**Server/environment:**
 
-- package.json [Folder]: All required modules are listed here. It is recommended to use Yarn to interact with this project, as opposed to NPM: https://yarnpkg.com/
+- [ ] Ubuntu 24+
+- [ ] Git 2.53+
 
-# Getting Started
+**Dependencies:**
 
-It is a [Next.js](https://nextjs.org) project. It is written in Javascript.
+- [ ] Node 20+
+- [ ] Next.js 15+
+- [ ] PostgreSQL 14+
+- [ ] Nginx 1.26+
 
-### Get NPM
+**Keys & credentials:**
 
-If you don't have a way to download NPM, first get that.
-
-Download and install fnm:
-
-```
-curl -o- https://fnm.vercel.app/install | bash
-```
-
-### Download and install Node.js:
+Credentials are stored in the `.env` file (copy from `.env.example`).
 
 ```
-fnm install 22
-```
-
-# YOU MUST HAVE NODE v18+ to use this app.
-
-### Download and install Yarn:
-
-npm install --global yarn
-
-### Verify Yarn version:
-
-yarn -v
-
-# Install Nginx
-
-```
-sudo apt install nginx
-```
-
-# Adjust firewall
-
-```
-sudo ufw app list
-```
-
-You want to see a list of available applications: (list them)
-
-```
-sudo ufw allow 'Nginx HTTP' // (verify with "sudo ufw status")
-```
-
-# Install Nginx (cont'd)
-
-```
-sudo nano /etc/nginx/sites-available/sim
-```
-
-FIND OUT WHAT OUR IP ADDRESS
-
-Write:
-
-```
-server {
-  listen 80;
-  server_name YOUR_IP_ADDRESS;
-  location / {
-    proxy_pass http://localhost:3000;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
-  }
-}
-```
-
-Create link
-
-```
-sudo ln -s /etc/nginx/sites-available/sim /etc/nginx/sites-enabled/
-```
-
-Check for errors:
-
-```
-sudo nginx -t
-```
-
-Run Nginx:
-
-```
-sudo service nginx restart
-```
-
-# Clone Git
-
-```
-cd /var/www
-sudo git clone https://github.com/aefader00/sim-next-app.git sim
-```
-
-then go into that directory.
-
-# Set up app
-
-```
-sudo yarn install
-
-```
-
-Add .env with this:
-
-```
-...
-```
-
-First, run the development server:
-
-```
-sudo yarn run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-# Database
-
-## Setting up PostgreSQL
-
-Create a new PostgreSQL database and user that can access it.
-Point to that database in the `.env` file like so:
-
-```
+NEXTAUTH_URL="https://localhost:3000/" // Set to production domain for the live website.
+AUTH_TRUST_HOST=true
+NEXTAUTH_SECRET=
+AUTH_GOODLE_ID=
+AUTH_GOODLE_SECRET=
 DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/DATABASE"
 ```
 
-## Setting up Prisma
+This website the Google API to manage user authentication, as a developer project created on the SIM Google account `@gmail.com`. You will need to create your own developer project for your local installation.
 
-Format the new database in the command line like so:
+## Installation & deployment
 
-```
-yarn prisma migrate dev --name init
-```
+```bash
+# 1. Clone the repository
+git clone https://github.com/aefader00/sim-next-app.git
 
-Then, see the database with a default semester (as defined in `/prisma/seed.ts`):
+# 2. Navigate to the project folder
+cd sim-next-app
 
-```
+# 3. Set up environment variables
+cp .env.example .env
+nano .env
+
+# 4. Install dependencies
+npm install --global yarn
+yarn install
+
+# 5. Set up the database
+sudo -u postgres psql
+> CREATE USER sim WITH PASSWORD 'sim';
+> CREATE DATABASE sim OWNER sim;
+> GRANT ALL PRIVILEGES ON DATABASE sim TO sim;
+> \c sim
+> GRANT ALL ON SCHEMA public TO sim;
+
+# 6. Link database to app
+
+yarn prisma migrate deploy
 yarn prisma db seed
-```
-
-Finally, install the Prisma client.
-
-```
 yarn prisma init
+
+# 7. Build the frontend
+yarn build
+
+# 8. Start the application
+yarn start
 ```
+
+**Access the application:**
+
+- Development: `http://localhost:3000` (or your configured port!)
+- Production: `https://massartsim.org`
+
+## Common maintenance tasks
+
+### How to update the application
+
+```bash
+# Pull the latest code.
+git pull
+
+# Install any new dependencies.
+yarn install
+
+# Run database migrations
+yarn prisma migrate deploy
+
+# Rebuild the application
+yarn build
+
+# Restart the application
+pm2 restart massart.xyz
+```
+
+### How to update the .env
+
+```bash
+pm2 restart massartsim.xyz --update-env
+```
+
+### How to check app status & logs
+
+```bash
+# Check service status
+pm2 list
+
+# View logs (last 50 lines)
+pm2 logs massartsim.xyz --lines 50
+
+# Follow error logs
+pm2 logs massartsim.xyz --err
+```
+
+### Backing up the database
+
+```bash
+pg_dump -U sim sim > backup_$(date +%Y%m%d).sql
+```
+
+### Restoring the database
+
+```bash
+sudo -u postgres dropdb --force sim
+sudo -u postgres createdb sim
+psql -U sim -d sim -f database/backups/[backup].sql
+```
+
+### Editing the database
+
+```bash
+sudo -u sim psql
+> UPDATE "Table" SET value = '' WHERE value = '';
+```
+
+## Project structure
+
+```
+sim-next-app/
+├── database /            # Database files
+│   ├── migrations/       # History of database migrations
+│   ├── schema.prisma     # Structure for the database
+│   ├── seed.ts           # Default information for a new database
+├── src/                  # Main code files
+│   ├── app/              # Website pages
+│   ├── components/       # Reusable code chunks
+│   ├── actions.js        # Next.js server actions
+│   ├── database.ts       # Prisma client init
+│   └── utilities.js      # Utility functions
+├── public/               # Static files (CSS, JS, images)
+│   ├── faces/            # Photos of students' faces uploaded by faculty
+├── .env                  # Environment variables (DO NOT COMMIT!)
+├── .env.example          # Environment template
+├── .gitignore
+├── package.json          # Project information, dependencies and scripts
+└── README.md             # This file!
+```
+
+A closer look at the pages of the website...
+
+```
+sim-next-app/src/app/
+├── admin /                         # Pages for faculty use
+│   ├── semesters/                  # All semesters
+│	│   ├── [id]/                   # Dynamic path for a selected semester
+│	│	│   ├── edit/               # Edit selected semester
+│	│   ├── add/                    # Add a new semester
+├── thursdays /                     # Calendar of all Thursdays
+│   ├── [thursday_id]/              # Dynamic path for a selected semester
+│	│   ├── edit/                   # Edit selected Thursday
+│	│   ├── groups/                 # All groups attached to this class
+│	│	│   ├── [group_id]/         # Dynamic path for a selected semester
+│	│	│	│   ├── [edit]/         # Edit selected group
+│	│	│	│   ├── works/          # All works attached to this group
+│	│	│	│	│   ├── [id]/       # Dynamic path for a selected work
+│	│	│	│	│	│   ├── edit/   # Edit selected work
+│	│	│	│	│   ├── add/        # Add a new work
+│	│	│   ├── add/                # Add new group
+├── users /                         # Directory of names and faces
+│   ├── [username]/                 # Dynamic path for a selected user
+│	│   ├── edit/                   # Edit selected user
+│	├── add/                        # Add new user
+├── globals.css                     # Website-wide styles
+├── layour.js                       # Website-wide layout (navbar, etc.)
+└── page.js                         # Home page. All page folders have a page.js.
+```
+
+## Common tasks for faculty
+
+### Adding a user
+
+### Editing a user
+
+### Adding a semester
+
+### Editing a semester
+
+### Editing a Thursday
+
+### Editing a group
