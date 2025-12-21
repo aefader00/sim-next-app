@@ -51,7 +51,7 @@ export default async function Admin({ searchParams }) {
 					Manage Students <AddContentButton href="users/add" />
 				</h1>
 				<p>
-					Below are all of the students enrolled in the "{`${semester.name}`}" semester. You can edit the profile of each student by clicking on the button next
+					Below are all of the students enrolled in the {`${semester.name}`} semester. You can edit the profile of each student by clicking on the button next
 					to their name. The presentations tab lists how many times this student has presented throughout the whole semester up until the present. The
 					productions tab shows how many times this student has produced a group, sorted into two groups based on whetehr they producted it before or after
 					halfway through the semester.
