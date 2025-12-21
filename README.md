@@ -49,7 +49,7 @@ This website the Google API to manage user authentication, as a developer projec
 
 ## Installation & deployment
 
-```
+```bash
 # 1. Clone the repository
 git clone https://github.com/aefader00/sim-next-app.git
 
@@ -94,7 +94,7 @@ yarn start
 
 ### How to update the application
 
-```
+```bash
 # Pull the latest code.
 git pull
 
@@ -113,7 +113,7 @@ pm2 restart massart.xyz
 
 ### How to update the .env
 
-```
+```bash
 pm2 restart massartsim.xyz --update-env
 ```
 
@@ -132,13 +132,13 @@ pm2 logs massartsim.xyz --err
 
 ### Backing up the database
 
-```
+```bash
 pg_dump -U sim sim > backup_$(date +%Y%m%d).sql
 ```
 
 ### Restoring the database
 
-```
+```bash
 sudo -u postgres dropdb --force sim
 sudo -u postgres createdb sim
 psql -U sim -d sim -f database/backups/[backup].sql
@@ -146,7 +146,7 @@ psql -U sim -d sim -f database/backups/[backup].sql
 
 ### Editing the database
 
-```
+```bash
 sudo -u sim psql
 > UPDATE "Table" SET value = '' WHERE value = '';
 ```
