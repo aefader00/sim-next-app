@@ -108,7 +108,7 @@ yarn prisma migrate deploy
 yarn build
 
 # Restart the application
-pm2 restart massart.xyz
+pm2 restart massartsim.xyz
 ```
 
 ### How to update the .env
@@ -207,12 +207,62 @@ sim-next-app/src/app/
 
 ### Adding a user
 
+To add a user, click on the "Add user" button on either the Names & Faces page or the admin dashboard page. You can also navigate to "/users/add".
+
+The most important field is their email. Users will use their Google accounts to log in, so you need to whitelist which addresses are allowed to access the website.
+
+You must fill also out information about the user like their name and pronouns. You will also need to upload a photo of their face.
+
 ### Editing a user
+
+To edit a user, click on the "Settings" button on their profile or the pencil button on the admin dashboard.
+
+You need to be an admin to be able to edit users that are not yourself.
 
 ### Adding a semester
 
-### Editing a semester
+Go to the admin dashboard, click on the "Add" button next to the "Semesters" section.
 
-### Editing a Thursday
+Add a name for the semester, typically something like "FA26."
 
-### Editing a group
+Select the dates of the first and last Thursday of the semester. The website will find every Thursday between and including those dates and create an database entry that you can add productions and presentations to.
+
+Select which users are present in the semester. All users in the most recent semester are auto-selected.
+
+### Removing a user from a semester
+
+If a user unenrolls from the semester but intends to reenroll in the future, you can "deactivate" the student without deleting their user by removing them from the semester.
+
+Go to the admin dashboard, click on the pencil button next to name of the semester you want to edit.
+
+Deselect the users.
+
+### Add a group production to a Thursday
+
+To add a production, go to the Thursdays page and search for the Thursday when the group will be produced. Click on the "Add" button next to "Groups".
+
+Add the name and location of the group.
+
+If a production is delayed, you are able to edit the selected Thursday later.
+
+Select the producers of the group. This is important data, as this production will be counted for their semester total on the admin dashboard.
+
+Create all presentations of the production.
+
+### Add a student's presentation to a group
+
+Start to either add or edit a production and scroll down to the "Presentations" section.
+
+Add the name and a description of the presentation.
+
+Add all presenters of the presentation. This is important data, as this presentation will be counted for their semester total on the admin dashboard and listed on the presenter's profile.
+
+### View student's progress through a semester.
+
+Go to the admin dashboard.
+
+Search for the student you want to inspect. The dashboard defaults to the most recent semester, so remember to change that filter if you want to look at previous semesters.
+
+The "Works Made" column contains all of the presentations by that user in the semester.
+
+The "Groups Produced" column contains all of the productions by that user in the semester, divided into the first half and second half of the semester.
