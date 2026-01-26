@@ -1,0 +1,19 @@
+.search {
+	flex: 1; /* stretch in flex container */
+	min-width: 0;
+	width: 100%;
+	max-width: 500px; /* desktop cap */
+	box-sizing: border-box;
+	border-radius: 10px;
+}
+
+.search:focus-visible {
+	outline: 4px solid blue;
+	outline-offset: 0;
+}
+
+@media (max-width: 768px) {
+	.search {
+		max-width: none;
+	}
+}

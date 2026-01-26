@@ -3,13 +3,13 @@ import SearchBar from "./searchbar";
 import NotFound from "./not-found";
 import { getAllSemesters } from "../actions";
 
-export async function ContentPage({ header, children }) {
+export async function ContentPage({ query, header, children }) {
 	const semesters = await getAllSemesters();
 	return (
 		<div>
 			<h1>{header} </h1>
 
-			<SearchBar semesters={semesters} />
+			<SearchBar query={query} semesters={semesters} />
 
 			<div
 				style={{

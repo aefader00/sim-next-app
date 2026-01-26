@@ -11,6 +11,7 @@ export default async function Users({ searchParams }) {
 	const users = await getFilteredUsers(filters);
 	return (
 		<ContentPage
+			query="user"
 			header={
 				<>
 					Names & Faces <AddContentButton href="users/add" />
