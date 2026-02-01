@@ -12,7 +12,7 @@ export default async function Thursdays({ searchParams }) {
 	const thursdays = await getFilteredThursdays(filters);
 
 	return (
-		<ContentPage header="Thursdays" query="thursdays">
+		<ContentPage filters={filters} header="Thursdays" query="thursdays">
 			<ContentTable items={thursdays} filters={filters} category={"Thursdays"}>
 				<div className={styles.ThursdaysGrid}>
 					{thursdays.map((thursday) => {

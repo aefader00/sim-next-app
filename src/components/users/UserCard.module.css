@@ -1,23 +1,27 @@
-.UserCard {
-	border: 0.1rem solid black;
-	max-width: 10rem;
+.faceContent {
 	display: flex;
-	padding: 1rem;
 	flex-direction: column;
-	align-content: center;
 	align-items: center;
-	background-color: white;
+	width: 100%;
+	gap: 0.25rem;
 }
 
-.UserCard img {
+.imageWrapper {
+	position: relative;
 	width: 8rem;
 	height: 8rem;
-	object-fit: cover; /* or 'contain' or 'fill' depending on behavior */
-
-	border-radius: 0.33rem;
 }
 
-.UserCard h3 {
-	margin: 0.5rem;
+.name {
 	text-align: center;
+	font-weight: bolder;
+	font-size: 1rem; /* your own font size */
+}
+
+.UserCardFace {
+	white-space: normal; /* allow wrapping */
+}
+
+.UserCard {
+	background: linear-gradient(white, whitesmoke); /* white → light grey */
 }

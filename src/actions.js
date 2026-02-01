@@ -14,8 +14,6 @@ import path from "path";
 export async function getFilteredUsers(filters) {
 	noStore();
 
-	console.log(filters);
-
 	// This shows content from all semesters.
 	let defaultSemester = { semesters: { some: { name: { contains: "" } } } };
 
@@ -172,7 +170,6 @@ export async function editUser({ id, name, about, image, email, link, pronouns }
 
 export async function addUser(data) {
 	const current_semester = await getAllSemesters();
-	console.log(current_semester[0].id);
 
 	try {
 		await prisma.user.create({
@@ -259,8 +256,8 @@ export async function editGroup(data) {
 						connect: p.presenters.map((id) => ({ id })),
 					},
 				},
-			})
-		)
+			}),
+		),
 	);
 
 	// ✅ Step 5: Update existing works and presenters
@@ -276,8 +273,8 @@ export async function editGroup(data) {
 						set: p.presenters.map((id) => ({ id })), // 👈 Replace presenters
 					},
 				},
-			})
-		)
+			}),
+		),
 	);
 
 	// Step 6: Delete removed works
@@ -286,8 +283,8 @@ export async function editGroup(data) {
 		worksToDelete.map((id) =>
 			prisma.work.delete({
 				where: { id },
-			})
-		)
+			}),
+		),
 	);
 }
 
@@ -419,8 +416,6 @@ export async function getAllGroups() {
 export async function getFilteredThursdays(filters) {
 	noStore();
 
-	console.log("filters", filters);
-
 	// This shows content from all semesters.
 	let defaultSemester = { semester: { name: { contains: "" } } };
 
@@ -449,6 +444,13 @@ export async function getFilteredThursdays(filters) {
 						groups: {
 							some: {
 								name: { contains: `${filters.thursdays}`, mode: "insensitive" },
+							},
+						},
+					},
+					{
+						groups: {
+							some: {
+								id: { contains: `${filters.thursdays}`, mode: "insensitive" },
 							},
 						},
 					},
@@ -544,8 +546,8 @@ export async function addGroup(data) {
 							connect: p.presenters.map((id) => ({ id })),
 						},
 					},
-				})
-			)
+				}),
+			),
 		);
 	} catch (error) {
 		console.error("Database Error:", error);

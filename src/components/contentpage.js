@@ -6,21 +6,21 @@ import NotFound from "./not-found";
 import { getAllSemesters } from "../actions";
 import SearchFilter from "./ui/SearchFilter";
 
-export async function ContentPage({ button, query, header, children }) {
+export async function ContentPage({ button, query, header, children, filters }) {
 	const semesters = await getAllSemesters();
 	return (
 		<div>
 			<SearchBar title={header}>
 				{button ? button : null}
 				<SearchInput query={query} />
-				<SearchFilter filter={"semester"} options={semesters} />
+				<SearchFilter filter={"semester"} options={semesters} defaultValue={filters.semester} />
 			</SearchBar>
 
 			<div
 				style={{
 					margin: "1rem",
 					padding: "1rem",
-					backgroundColor: "lightgrey",
+					backgroundColor: "rgba(211, 211, 211, 0.75)", // lightgrey with 0.8 opacity
 					borderRadius: "0.33rem",
 				}}
 			>

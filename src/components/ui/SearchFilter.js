@@ -17,11 +17,17 @@ export default function SearchFilter({
 	const handleOptions = useDebouncedCallback((term) => {
 		const params = new URLSearchParams(searchParams);
 
-		if (term && term !== "All") {
+		if (term) {
 			params.set(filter, term);
 		} else {
 			params.delete(filter);
 		}
+
+		// if (term && term !== "All") {
+		// 	params.set(filter, term);
+		// } else {
+		// 	params.delete(filter);
+		// }
 
 		replace(`${pathname}?${params.toString()}`);
 	}, 300);
@@ -33,7 +39,9 @@ export default function SearchFilter({
 					{option.name}
 				</option>
 			))}
-			<option value="All">All</option>
+			<option key="All" value="All">
+				All
+			</option>
 		</Control>
 	);
 }

@@ -1,10 +1,25 @@
-import Link from "next/link";
+import Control from "../ui/Control";
+import Image from "next/image";
 import styles from "./UserCard.module.css";
+
 export default function UserCard({ user }) {
 	return (
-		<Link className={styles.UserCard} href={`/users/${user.username}`}>
-			<img src={user.image} alt={`${user.name}'s Photo`} />
-			<h3>{user.name}</h3>
-		</Link>
+		<Control as="a" href={`/users/${user.username}`} className={styles.UserCard}>
+			<div className={`${styles.faceContent} ${styles.UserCardFace}`}>
+				<div className={styles.imageWrapper}>
+					<Image
+						src={user.image}
+						alt={`${user.name}'s face`}
+						fill
+						style={{
+							objectFit: "cover",
+							borderRadius: "5px",
+							border: "2px solid #222222",
+						}}
+					/>
+				</div>
+				<div className={styles.name}>{user.name}</div>
+			</div>
+		</Control>
 	);
 }
