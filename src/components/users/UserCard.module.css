@@ -9,7 +9,7 @@
 .imageWrapper {
 	position: relative;
 	width: 8rem;
-	height: 8rem;
+	height: 10rem;
 }
 
 .name {
@@ -18,10 +18,7 @@
 	font-size: 1rem; /* your own font size */
 }
 
-.UserCardFace {
-	white-space: normal; /* allow wrapping */
-}
-
 .UserCard {
 	background: linear-gradient(white, whitesmoke); /* white → light grey */
+	white-space: normal; /* allow wrapping */
 }
