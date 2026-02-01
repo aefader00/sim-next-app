@@ -14,14 +14,14 @@ export default function ManageThursdaysTable({ thursdays = [] }) {
 				</tr>
 			}
 			body={thursdays.map((u) => (
-				<tr>
+				<tr key={u.id}>
 					<td>{u.name}</td>
 					<td>{u.date?.toLocaleDateString() || ""}</td>
 
 					<td>
 						<ul>
 							{(u.groups || []).map((group) => (
-								<li>
+								<li key={`group.id:${group.id}`}>
 									<Link href={`/thursdays/${group.thursday_id}`}>
 										{group.name}
 										{group.producers?.length > 0 ? " by " + formatNiceListFromArray(group.producers.map((p) => p.name)) : ""}
@@ -35,7 +35,7 @@ export default function ManageThursdaysTable({ thursdays = [] }) {
 						<ul>
 							{(u.groups || []).flatMap((group) =>
 								(group.presentations || []).map((work) => (
-									<li>
+									<li key={`work.id:${work.id}`}>
 										<Link href={`/thursdays/${group.thursday_id}`}>
 											{work.name}
 											{work.presenters?.length > 0 ? " by " + formatNiceListFromArray(work.presenters.map((po) => po.name)) : ""}
