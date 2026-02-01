@@ -1,54 +1,67 @@
 import { getUser, getCurrentUser } from "../../../actions";
-
 import NotFound from "../../../components/not-found";
-import LinkButton from "../../../components/linkbutton";
 import WorkCard from "@/components/thursdays/groups/works/WorkCard";
-
+import Button from "@/components/ui/Button";
 import styles from "../../../components/users/user.module.css";
+import SearchBar from "@/components/ui/SearchBar";
+import Link from "next/link";
 
 export default async function User({ params }) {
-	// Get the user data of the user you are looking at.
 	const { username } = await params;
 	const user = await getUser(username);
-
 	if (!user) return <NotFound category={"User"} query={username} />;
 
-	// Get the user data of the user you are signed in as.
 	const currentUser = await getCurrentUser();
 	if (!currentUser) return;
 
+	const canEdit = currentUser.admin || user.id === currentUser.id;
+
 	return (
 		<div className={styles.UserTable}>
+			{/* LEFT: PHOTO */}
 			<div className={styles.UserImage}>
 				<img src={user.image} alt={`${user.name}'s image`} />
 			</div>
+
+			{/* RIGHT: CONTENT */}
 			<div>
-				<h1 className={styles.UserName}>
-					{user.name}
-					{user.admin == true ? <>✨</> : null}
-					{currentUser.admin == true || user.id == currentUser.id ? <LinkButton href={`./${user?.username}/edit`} value="Settings ⛭" /> : null}
-				</h1>
-				<hr />
-				<ul className={styles.UserData}>
-					<li>
-						<label>Pronouns</label> <p>{user.pronouns?.length > 0 ? user.pronouns : "This user has not set their pronouns yet"}</p>
-					</li>
-					<li>
-						<label>About</label> <p>{user.about?.length > 0 ? user.about : "This user has not written an about yet..."}</p>
-					</li>
-					<li>
-						<label>Presentations</label>
-						{user.presentations?.length > 0 ? (
-							user.presentations?.map((work) => {
-								return <WorkCard key={work.id} work={work} />;
-							})
-						) : (
-							<p>
+				<SearchBar
+					title={
+						<div style={{ fontWeight: "bolder", fontSize: "2rem" }}>
+							{user.name}
+							{user.admin ? " ✨" : null}
+						</div>
+					}
+				>
+					{canEdit && (
+						<Button href={`./${user.username}/edit`} className={styles.EditButton}>
+							Edit Profile
+						</Button>
+					)}
+				</SearchBar>
+
+				<div className={styles.UserData}>
+					<div className={styles.DataRow}>
+						<div className={styles.Label}>Pronouns</div>
+						<div className={styles.Value}>{user.pronouns?.length > 0 ? user.pronouns : "This user has not set their pronouns yet."}</div>
+					</div>
+
+					<div className={styles.DataRow}>
+						<div className={styles.Label}>About</div>
+						<div className={styles.Value}>{user.about?.length > 0 ? user.about : "This user has not written an about yet."}</div>
+					</div>
+
+					<div className={styles.DataRow}>
+						<div className={styles.Label}>Presentations</div>
+						<div className={styles.Value}>
+							{user.presentations?.length > 0 ? (
+								user.presentations.map((work) => <WorkCard key={work.id} work={work} />)
+							) : (
 								<i>This user has not presented any work yet.</i>
-							</p>
-						)}
-					</li>
-				</ul>
+							)}
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

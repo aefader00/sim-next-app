@@ -16,8 +16,6 @@ import ThursdaysManager from "../../components/semesters/ThursdaysManager";
 import GoodButton from "../../components/GoodButton";
 
 import Button from "../../components/ui/Button";
-import Select from "../../components/ui/SelectInput";
-import SelectInput from "../../components/ui/SelectInput";
 
 export default async function Admin({ searchParams }) {
 	const filters = await searchParams;

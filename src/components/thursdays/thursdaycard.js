@@ -67,15 +67,17 @@ export default function ThursdayCard({ thursday }) {
 
 								<div>
 									<b>Presentations:</b>
-									{group.presentations.length > 0 ? (
-										group.presentations?.map((work) => {
-											return <WorkCard key={work.id} work={work} />;
-										})
-									) : (
-										<p>
-											<i>There are no presented works for this group yet.</i>
-										</p>
-									)}
+									<div style={{ padding: "0.5rem" }}>
+										{group.presentations.length > 0 ? (
+											group.presentations?.map((work) => {
+												return <WorkCard key={work.id} work={work} />;
+											})
+										) : (
+											<p>
+												<i>There are no presented works for this group yet.</i>
+											</p>
+										)}
+									</div>
 								</div>
 							</div>
 						);

@@ -11,7 +11,6 @@ export default function NavSelect({ pages }) {
 	const handleChange = (e) => {
 		router.push(e.target.value);
 	};
-	console.log(pages);
 	return (
 		<Control className={styles.inputFace} as="select" onChange={handleChange}>
 			{pages.map((p) => (

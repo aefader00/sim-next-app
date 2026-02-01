@@ -1,5 +1,5 @@
 .navbar {
-	background: darkorange;
+	background: linear-gradient(#f26419, #d94f14);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

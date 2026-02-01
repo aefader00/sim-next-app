@@ -1,42 +1,120 @@
+/* ---------- PAGE LAYOUT ---------- */
+
 .UserTable {
 	display: grid;
-
-	grid-template-columns: 1fr 3fr;
+	grid-template-columns: 260px 1fr; /* left: photo, right: content */
+	gap: 3rem;
+	align-items: start;
+	padding: 2.5rem 3rem;
+	max-width: 1100px;
+	margin: 0 auto;
 }
 
+/* Mobile: stack everything */
+@media (max-width: 768px) {
+	.UserTable {
+		grid-template-columns: 1fr;
+		padding: 1.5rem;
+		gap: 2rem;
+	}
+}
+
+/* ---------- IMAGE ---------- */
+
 .UserImage {
-	padding: 1rem;
+	display: flex;
+	justify-content: center;
 }
 
 .UserImage img {
-	width: 20rem;
-	height: 20rem;
-	object-fit: cover; /* or 'contain' or 'fill' depending on behavior */
+	width: 100%; /* take full width of column */
+	aspect-ratio: 1 / 1; /* maintain square */
+	object-fit: cover;
+	border-radius: 5px;
+	border: 3px solid #000; /* black outline */
+}
+
+/* Smaller photo on mobile */
+@media (max-width: 768px) {
+	.UserImage img {
+		width: 100%; /* take full width of mobile container */
+		max-width: 260px; /* optional max */
+	}
+}
+
+/* ---------- HEADER (NAME + EDIT) ---------- */
+
+.UserHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between; /* desktop: button right of name */
+	gap: 1rem;
+	margin-bottom: 1rem;
+	flex-wrap: wrap; /* allow wrapping on mobile */
 }
 
 .UserName {
-	margin: 0.25rem;
-
+	margin: 0;
+	font-size: 2.2rem;
+	font-weight: 800;
+	line-height: 1.2;
 	display: flex;
-
 	align-items: center;
+	gap: 0.5rem;
 }
+
+/* Button styles */
+.EditButton {
+	font-size: 0.85rem;
+	padding: 0.35rem 0.9rem;
+	white-space: nowrap;
+}
+
+/* MOBILE: stack name + button, button full width */
+@media (max-width: 768px) {
+	.UserHeader {
+		flex-direction: column;
+		align-items: stretch; /* stretches children */
+	}
+
+	.EditButton {
+		width: 100%;
+		text-align: center;
+	}
+}
+
+/* ---------- USER DATA ---------- */
 
 .UserData {
-	list-style: none;
-	padding: 0;
-}
-
-.UserData label {
-	font-weight: bold;
-	font-size: 1.25rem;
-}
-
-.UserData textarea {
-	margin: 0.5rem;
 	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	margin-top: 1rem;
 }
 
-.UserData p {
-	margin: 0.5rem;
+.DataRow {
+	display: flex;
+	flex-direction: column;
+}
+
+.Label {
+	font-weight: 900; /* bolder */
+	font-size: 1.15rem;
+	color: hsl(0, 0%, 20%);
+}
+
+.Value {
+	padding: 0.25rem; /* spacing from label */
+	color: #222;
+
+	/* NEW: stack WorkCards vertically */
+	display: flex;
+	flex-direction: column;
+}
+
+.Value > * {
+	margin-top: 0.75rem;
+
+	/* Make WorkCard fill the Value container width */
+	width: 100%;
 }
