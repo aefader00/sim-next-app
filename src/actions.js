@@ -14,6 +14,8 @@ import path from "path";
 export async function getFilteredUsers(filters) {
 	noStore();
 
+	console.log(filters);
+
 	// This shows content from all semesters.
 	let defaultSemester = { semesters: { some: { name: { contains: "" } } } };
 
@@ -29,14 +31,14 @@ export async function getFilteredUsers(filters) {
 	}
 
 	// If there is no search query, use empty string so taht.
-	if (filters.query === undefined) {
-		filters.query = "";
+	if (filters.user === undefined) {
+		filters.user = "";
 	}
 
 	try {
 		const users = await prisma.user.findMany({
 			where: {
-				OR: [{ name: { contains: `${filters.query}`, mode: "insensitive" } }],
+				OR: [{ name: { contains: `${filters.user}`, mode: "insensitive" } }],
 				AND: defaultSemester,
 			},
 
@@ -417,6 +419,8 @@ export async function getAllGroups() {
 export async function getFilteredThursdays(filters) {
 	noStore();
 
+	console.log("filters", filters);
+
 	// This shows content from all semesters.
 	let defaultSemester = { semester: { name: { contains: "" } } };
 
@@ -432,19 +436,19 @@ export async function getFilteredThursdays(filters) {
 	}
 
 	// If there is no search query, use empty string so taht.
-	if (filters.query === undefined) {
-		filters.query = "";
+	if (filters.thursdays === undefined) {
+		filters.thursdays = "";
 	}
 
 	try {
 		const thursdays = await prisma.thursday.findMany({
 			where: {
 				OR: [
-					{ name: { contains: `${filters.query}`, mode: "insensitive" } },
+					{ name: { contains: `${filters.thursdays}`, mode: "insensitive" } },
 					{
 						groups: {
 							some: {
-								name: { contains: `${filters.query}`, mode: "insensitive" },
+								name: { contains: `${filters.thursdays}`, mode: "insensitive" },
 							},
 						},
 					},
@@ -452,7 +456,7 @@ export async function getFilteredThursdays(filters) {
 						groups: {
 							some: {
 								location: {
-									contains: `${filters.query}`,
+									contains: `${filters.thursdays}`,
 									mode: "insensitive",
 								},
 							},

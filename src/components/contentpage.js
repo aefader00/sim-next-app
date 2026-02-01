@@ -1,15 +1,20 @@
-import SearchBar from "./searchbar";
+import SearchBar from "./ui/SearchBar";
+import SearchInput from "./ui/SearchInput";
+import Button from "./ui/Button";
 
 import NotFound from "./not-found";
 import { getAllSemesters } from "../actions";
+import SearchFilter from "./ui/SearchFilter";
 
-export async function ContentPage({ header, children }) {
+export async function ContentPage({ button, query, header, children }) {
 	const semesters = await getAllSemesters();
 	return (
 		<div>
-			<h1>{header} </h1>
-
-			<SearchBar semesters={semesters} />
+			<SearchBar title={header}>
+				{button ? button : null}
+				<SearchInput query={query} />
+				<SearchFilter filter={"semester"} options={semesters} />
+			</SearchBar>
 
 			<div
 				style={{

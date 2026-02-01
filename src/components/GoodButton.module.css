@@ -1,0 +1,22 @@
+.button {
+	padding: 0.6rem 1.2rem;
+	font-weight: 600;
+	border: 2px solid #000;
+	border-radius: 8px;
+	cursor: pointer;
+	box-shadow: 0 4px 0 #000;
+	transition: transform 0.01s ease, box-shadow 0.01s ease;
+}
+
+.button:active {
+	transform: translateY(4px);
+	box-shadow: 0 0 0 #000;
+}
+
+.primary {
+	background: #ff8c1a;
+}
+
+.secondary {
+	background: #ffd27d;
+}

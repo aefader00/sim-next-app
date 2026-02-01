@@ -1,0 +1,43 @@
+.wrapper {
+	position: relative;
+	display: inline-flex; /* shrink-to-fit but allows flex expansion */
+	align-self: flex-start; /* prevents stretching in parent flex */
+}
+
+.face {
+	position: relative;
+	z-index: 1;
+	border: 3px solid #000;
+	border-radius: 10px;
+	background: linear-gradient(#ffb347, #ff8c42);
+	padding: 10px 16px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.02s ease;
+	display: block; /* fill wrapper */
+	width: 100%;
+	white-space: nowrap; /* prevent breaking */
+	box-sizing: border-box; /* include padding in width */
+}
+
+.inputFace {
+	background: linear-gradient(whitesmoke, lightgrey); /* white → light grey */
+}
+
+.shadow {
+	position: absolute;
+	inset: 0;
+	transform: translateY(4px);
+	background: #000;
+	border-radius: 10px;
+	z-index: 0;
+}
+
+.pressed .face {
+	transform: translateY(4px);
+}
+
+.disabled .face {
+	opacity: 0.6;
+	cursor: not-allowed;
+}

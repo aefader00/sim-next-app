@@ -1,38 +1,35 @@
 import { isCurrentUserAdmin, LogOut } from "../actions";
 import styles from "./navbar.module.css";
-
-import Link from "next/link";
+import Button from "@/components/ui/Button";
+import NavSelect from "./ui/NavSelect";
 
 export default async function Navbar({ session }) {
 	const admin = await isCurrentUserAdmin();
-	const options = [
+
+	const pages = [
 		{ href: "/users", label: "Names & Faces" },
 		{ href: "/thursdays", label: "Thursdays" },
+		...(admin ? [{ href: "/semesters", label: "Admin" }] : []),
+		{ href: `/users/${session.user.username}`, label: "My Profile" },
 	];
+
 	return (
 		<nav className={styles.navbar}>
-			<div className={styles.menu}>
-				<Link key={"home"} href="/">
-					SIM
-				</Link>
-			</div>
-			<div className={styles.menu}>
-				{options.map((option) => (
-					<Link key={option.label} href={option.href}>
-						{option.label}
-					</Link>
+			{/* Brand always visible */}
+			<div className={styles.brand}>SIM</div>
+
+			{/* Desktop Buttons */}
+			<div className={styles.desktopMenu}>
+				{pages.map((p) => (
+					<Button key={p.label} href={p.href}>
+						{p.label}
+					</Button>
 				))}
-				{admin ? (
-					<Link key={"admin"} href={"/admin"}>
-						Admin
-					</Link>
-				) : null}
-				<Link key={"profile"} href={`/users/${session.user.username}`}>
-					<img src={session.user.image} alt={`${session.user.name}'s Profile`} style={{ borderRadius: "50%" }} />
-				</Link>
-				<a onClick={LogOut}>
-					<img src={"/power.png"} alt={"Sign Out"} style={{ height: "1.5rem" }} />
-				</a>
+			</div>
+
+			{/* Mobile Dropdown */}
+			<div className={styles.mobileMenu}>
+				<NavSelect pages={pages} />
 			</div>
 		</nav>
 	);

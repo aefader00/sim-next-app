@@ -1,39 +1,63 @@
 .navbar {
-	color: white;
-	background-color: darkorange;
-
+	background: darkorange;
 	display: flex;
 	align-items: center;
-
 	justify-content: space-between;
-
-	margin: 0;
-	padding: 0;
+	padding: 0.5rem 1rem;
+	gap: 1rem;
 }
 
-.menu {
-	display: flex;
-}
+/* Navbar.module.css */
 
-.menu a {
+/* Brand */
+.brand {
+	height: 44px;
 	display: flex;
 	align-items: center;
-	padding: 1rem;
-}
-
-.menu a:hover {
-	background-color: orangered;
-	cursor: pointer;
-}
-
-.menu a:link {
-	text-decoration: none;
-}
-
-.menu a:visited {
 	color: white;
+	font-size: 2rem;
+	font-weight: bolder;
 }
 
-.menu img {
-	height: 3rem;
+/* Icon buttons = square */
+.iconButton {
+	padding: 0;
+	width: 44px;
+	height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Images fill the square */
+.iconButton img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 0; /* 🚫 no circle */
+}
+
+/* Desktop menu visible only on desktop */
+.desktopMenu {
+	display: flex;
+	gap: 0.5rem;
+	margin-left: auto; /* push to right */
+}
+
+.mobileMenu {
+	display: none; /* hidden by default */
+	margin-left: auto; /* align right */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+	.desktopMenu {
+		display: none; /* hide desktop buttons */
+	}
+
+	.mobileMenu {
+		display: flex; /* use flex to control alignment */
+		justify-content: flex-end; /* push dropdown to the right */
+		width: 100%; /* optional: container fills navbar width */
+	}
 }

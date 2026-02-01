@@ -1,0 +1,30 @@
+.selectWrapper {
+	flex: 1; /* stretch on mobile */
+	min-width: 0;
+	max-width: 280px; /* optional desktop cap */
+	position: relative;
+}
+
+.select {
+	width: 100%;
+	appearance: none;
+	cursor: pointer;
+	/* optional custom styles for dropdown text, font-size etc. */
+}
+
+/* Dropdown arrow */
+.selectWrapper::after {
+	content: "▼";
+	position: absolute;
+	right: 0.75rem;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+/* Remove max-width on mobile */
+@media (max-width: 768px) {
+	.selectWrapper {
+		max-width: none;
+	}
+}
