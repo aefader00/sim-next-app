@@ -33,8 +33,8 @@ export default async function Admin({ searchParams }) {
 		<div>
 			<SearchBar title="Manage Semester">
 				<SearchFilter filter={"semester"} options={semesters} defaultValue={semesters[0]} />
-				<Button>Edit</Button>
-				<Button>New Semester</Button>
+				<Button href={`admin/semesters/${semester.id}/edit`}>Edit</Button>
+				<Button href="admin/semesters/add">New Semester</Button>
 			</SearchBar>
 			<br />
 			<UsersManager query={"user"} users={users} filters={filters} button={<Button href="/users/add">New User</Button>} semester={semester} />

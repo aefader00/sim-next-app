@@ -9,7 +9,7 @@ export default function ManageThursdaysTable({ thursdays = [] }) {
 				<tr>
 					<th>Name</th>
 					<th>Date</th>
-					<th>Producers</th>
+					<th>Productions</th>
 					<th>Presentations</th>
 				</tr>
 			}
