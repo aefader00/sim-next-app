@@ -7,18 +7,16 @@
 	gap: 1rem;
 }
 
+/* Navbar.module.css */
+
 /* Brand */
 .brand {
 	height: 44px;
 	display: flex;
 	align-items: center;
-}
-
-/* Desktop menu */
-.desktopMenu {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
+	color: white;
+	font-size: 2rem;
+	font-weight: bolder;
 }
 
 /* Icon buttons = square */
@@ -39,32 +37,27 @@
 	border-radius: 0; /* 🚫 no circle */
 }
 
-/* Mobile menu hidden on desktop */
+/* Desktop menu visible only on desktop */
+.desktopMenu {
+	display: flex;
+	gap: 0.5rem;
+	margin-left: auto; /* push to right */
+}
+
 .mobileMenu {
-	display: none;
+	display: none; /* hidden by default */
+	margin-left: auto; /* align right */
 }
 
-/* Mobile dropdown styled like control */
-.mobileSelect {
-	padding: 0.6rem 1rem;
-	border: 2px solid #000;
-	border-radius: 10px;
-	box-shadow: 0 4px 0 #000;
-	font-weight: 600;
-}
-
-/* ------------------ MOBILE ------------------ */
+/* Mobile */
 @media (max-width: 768px) {
 	.desktopMenu {
-		display: none;
+		display: none; /* hide desktop buttons */
 	}
 
 	.mobileMenu {
-		display: block;
-		flex: 1;
-	}
-
-	.mobileSelect {
-		width: 100%;
+		display: flex; /* use flex to control alignment */
+		justify-content: flex-end; /* push dropdown to the right */
+		width: 100%; /* optional: container fills navbar width */
 	}
 }

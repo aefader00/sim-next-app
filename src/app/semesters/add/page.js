@@ -1,6 +1,6 @@
-import SemesterForm from "../../../../components/admin/semesters/SemesterForm";
+import SemesterForm from "../../../components/admin/semesters/SemesterForm";
 
-import { getAllSemesters, getAllUsers, addSemester } from "../../../../actions";
+import { getAllSemesters, getAllUsers, addSemester } from "../../../actions";
 import { redirect } from "next/navigation";
 
 export default async function AddSemester() {

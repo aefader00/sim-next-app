@@ -32,14 +32,14 @@ export default async function Admin({ searchParams }) {
 	return (
 		<div>
 			<SearchBar title="Manage Semester">
-				<SearchFilter className={styles.SearchFilter} filter={"semester"} options={semesters} defaultValue={semesters[0]} />
+				<SearchFilter filter={"semester"} options={semesters} defaultValue={semesters[0]} />
 				<Button>Edit</Button>
 				<Button>New Semester</Button>
 			</SearchBar>
 			<br />
-			<UsersManager query={"user"} users={users} filters={filters} button={"New User"} />
+			<UsersManager query={"user"} users={users} filters={filters} button={<Button href="/users/add">New User</Button>} semester={semester} />
 			<br />
-			<ThursdaysManager query={"thursdays"} thursdays={thursdays} filters={filters} button={"New Thursday"} />
+			<ThursdaysManager query={"thursdays"} thursdays={thursdays} filters={filters} />
 			<br />
 		</div>
 	);

@@ -1,24 +1,22 @@
 import { isCurrentUserAdmin, LogOut } from "../actions";
 import styles from "./navbar.module.css";
 import Button from "@/components/ui/Button";
-import MobileNavSelect from "./ui/NavSelect";
+import NavSelect from "./ui/NavSelect";
 
 export default async function Navbar({ session }) {
 	const admin = await isCurrentUserAdmin();
 
 	const pages = [
-		{ href: "/", label: "Home" },
 		{ href: "/users", label: "Names & Faces" },
 		{ href: "/thursdays", label: "Thursdays" },
-		...(admin ? [{ href: "/semesters", label: "Manage Semester" }] : []),
+		...(admin ? [{ href: "/semesters", label: "Admin" }] : []),
 		{ href: `/users/${session.user.username}`, label: "My Profile" },
 	];
 
 	return (
 		<nav className={styles.navbar}>
-			<Button href="/" className={styles.brand}>
-				SIM
-			</Button>
+			{/* Brand always visible */}
+			<div className={styles.brand}>SIM</div>
 
 			{/* Desktop Buttons */}
 			<div className={styles.desktopMenu}>
@@ -27,21 +25,11 @@ export default async function Navbar({ session }) {
 						{p.label}
 					</Button>
 				))}
-
-				{/* <Button href={`/users/${session.user.username}`} className={styles.iconButton}>
-					<img src={session.user.image} alt="Profile" />
-				</Button>
-
-				<form action={LogOut}>
-					<Button type="submit" className={styles.iconButton}>
-						<img src="/power.png" alt="Sign Out" />
-					</Button>
-				</form> */}
 			</div>
 
 			{/* Mobile Dropdown */}
 			<div className={styles.mobileMenu}>
-				<MobileNavSelect pages={pages} />
+				<NavSelect pages={pages} />
 			</div>
 		</nav>
 	);

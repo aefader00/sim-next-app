@@ -1,115 +1,43 @@
-.controlContainer {
+.wrapper {
 	position: relative;
-	display: inline-block; /* ensures <a> behaves like a button */
-	cursor: pointer;
-	user-select: none;
-	border-radius: 10px;
+	display: inline-flex; /* shrink-to-fit but allows flex expansion */
+	align-self: flex-start; /* prevents stretching in parent flex */
 }
 
-/* Black base element for arcade depth */
-.buttonBase {
-	position: absolute;
-	top: var(--press-distance, 4px); /* offset from top for “depth” */
-	left: 0;
-	right: 0;
-	height: var(--control-height, 2.5rem);
-	background: black;
+.face {
+	position: relative;
+	z-index: 1;
+	border: 3px solid #000;
 	border-radius: 10px;
-	pointer-events: none; /* allow top button to receive clicks */
+	background: linear-gradient(#ffb347, #ff8c42);
+	padding: 10px 16px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.02s ease;
+	display: block; /* fill wrapper */
+	width: 100%;
+	white-space: nowrap; /* prevent breaking */
+	box-sizing: border-box; /* include padding in width */
+}
+
+.inputFace {
+	background: linear-gradient(whitesmoke, lightgrey); /* white → light grey */
+}
+
+.shadow {
+	position: absolute;
+	inset: 0;
+	transform: translateY(4px);
+	background: #000;
+	border-radius: 10px;
 	z-index: 0;
 }
 
-/* Top element (button/input/select) */
-.control {
-	--base-color: #ffd27d;
-	--hover-lighten: 50%;
-	--control-height: 2.5rem;
-	--control-padding-y: 0.5rem;
-	--control-padding-x: 1rem;
-	--press-distance: 4px;
-
-	position: relative;
-	display: block;
-	width: 100%;
-	height: var(--control-height);
-	padding: var(--control-padding-y) var(--control-padding-x);
-	border-radius: 10px;
-	border: 2px solid black;
-	background: var(--base-color);
-	color: black;
-	font-weight: 600;
-	text-decoration: none; /* removes underline */
-	z-index: 1;
-
-	transform: translateZ(0);
-	transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.4, 1), background 0.08s linear;
-	box-sizing: border-box;
+.pressed .face {
+	transform: translateY(4px);
 }
 
-/* Hover effect */
-.control:hover {
-	background: color-mix(in srgb, var(--base-color) 100%, white var(--hover-lighten));
-}
-
-/* Press effect */
-.control:active {
-	transform: translateY(var(--press-distance));
-	transition-duration: 0s; /* instant tactile feel */
-}
-
-/* Focus outline */
-.control:focus-visible {
-	outline: 3px solid black;
-	outline-offset: 2px;
-}
-
-/* Remove all underlines from link buttons */
-.controlContainer a,
-.controlContainer a:link,
-.controlContainer a:visited,
-.controlContainer a:hover,
-.controlContainer a:active,
-.controlContainer a:focus {
-	text-decoration: none;
-	color: black;
-	display: inline-block;
-}
-
-.selectWrapper {
-	position: relative;
-	width: 100%;
-	display: flex;
-	align-items: center;
-}
-
-.selectControl {
-	flex: 1;
-	appearance: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	cursor: pointer;
-	padding: 0.5rem 2.5rem 0.5rem 1rem; /* top/right/bottom/left */
-	text-align: left;
-	border-radius: 10px;
-	border: 2px solid black;
-	background: var(--base-color, #ffd27d);
-	height: 2.5rem;
-	z-index: 1;
-	position: relative;
-}
-
-/* Solid triangle arrow */
-.selectWrapper::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	right: 0.75rem;
-	transform: translateY(-50%);
-	width: 0;
-	height: 0;
-	border-left: 6px solid transparent;
-	border-right: 6px solid transparent;
-	border-top: 6px solid black; /* solid triangle */
-	pointer-events: none; /* allow clicks through */
-	z-index: 2;
+.disabled .face {
+	opacity: 0.6;
+	cursor: not-allowed;
 }

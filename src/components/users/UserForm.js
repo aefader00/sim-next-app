@@ -25,6 +25,9 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 					data.id = user.id;
 					data.username = user.username;
 				}
+				if (isCurrentUserAdmin == false) {
+					data.email = user.email;
+				}
 				onSubmit(data);
 			}}
 			button={user ? "Edit User" : "Add User"}

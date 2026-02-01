@@ -1,19 +1,24 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import SelectInput from "@/components/ui/SelectInput";
+import Control from "@/components/ui/Control";
+import styles from "./Control.module.css";
 
 export default function NavSelect({ pages }) {
 	const router = useRouter();
 	const pathname = usePathname();
 
+	const handleChange = (e) => {
+		router.push(e.target.value);
+	};
+	console.log(pages);
 	return (
-		<SelectInput value={pathname} onChange={(e) => router.push(e.target.value)}>
+		<Control className={styles.inputFace} as="select" onChange={handleChange}>
 			{pages.map((p) => (
 				<option key={p.href} value={p.href}>
 					{p.label}
 				</option>
 			))}
-		</SelectInput>
+		</Control>
 	);
 }

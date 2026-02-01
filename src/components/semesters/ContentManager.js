@@ -12,7 +12,7 @@ export default function ContentManager({ button, title, query, children }) {
 			<SearchBar title={title}>
 				<SearchInput query={query} />
 
-				<Button>{button}</Button>
+				{button}
 			</SearchBar>
 
 			{children}

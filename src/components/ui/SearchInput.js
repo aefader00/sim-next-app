@@ -3,42 +3,47 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
-import base from "./Control.module.css";
-import styles from "./SearchInput.module.css";
-import clsx from "clsx";
+import Control from "./Control";
+import styles from "./Control.module.css";
 
-export default function SearchInput({ query = "search", placeholder = "🔎" }) {
+export default function SearchInput({ query = "search", placeholder = "Search" }) {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const { replace } = useRouter();
 
+	// Current param from URL
 	const paramValue = searchParams.get(query) || "";
+
+	// Local state for controlled input
 	const [value, setValue] = useState(paramValue);
 
+	// Keep local state in sync if URL changes from outside
 	useEffect(() => {
 		setValue(paramValue);
 	}, [paramValue]);
 
-	const handleSearch = useDebouncedCallback((term) => {
+	// Debounced navigation: only replace URL after user stops typing for 500ms
+	const debouncedReplace = useDebouncedCallback((newValue) => {
 		const params = new URLSearchParams(searchParams);
-		if (term) params.set(query, term);
+
+		if (newValue) params.set(query, newValue);
 		else params.delete(query);
 
 		replace(`${pathname}?${params.toString()}`);
-	}, 300);
+	}, 500); // longer debounce = less stutter
 
 	return (
-		<div className={base.controlContainer + " " + styles.search}>
-			<div className={base.buttonBase}></div>
-			<input
-				className={clsx(base.control)}
-				value={value}
-				placeholder={placeholder}
-				onChange={(e) => {
-					setValue(e.target.value);
-					handleSearch(e.target.value);
-				}}
-			/>
-		</div>
+		<Control
+			as="input"
+			type="text"
+			value={value}
+			placeholder={placeholder}
+			className={styles.inputFace}
+			onChange={(e) => {
+				const newValue = e.target.value;
+				setValue(newValue); // update input immediately
+				debouncedReplace(newValue); // only update URL after debounce
+			}}
+		/>
 	);
 }
