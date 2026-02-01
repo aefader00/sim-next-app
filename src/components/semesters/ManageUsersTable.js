@@ -1,6 +1,6 @@
 import ManageContentTable from "./ManageContentTable";
-import Button from "../ui/Button";
 import Link from "next/link";
+import { formatNiceListFromArray } from "../../utilities";
 
 export default function ManageUsersTable({ users = [], semester }) {
 	return (
@@ -13,34 +13,34 @@ export default function ManageUsersTable({ users = [], semester }) {
 				</tr>
 			}
 			body={users.map((user) => {
+				// Filter groups this user is part of in this semester
 				const groupsFromSemester = [];
-
-				semester.thursdays.map((thursday) => {
-					user.productions.map((group) => {
+				semester.thursdays.forEach((thursday) => {
+					(user.productions || []).forEach((group) => {
 						if (group.thursday_id === thursday.id) {
-							group.date = thursday.date;
-							groupsFromSemester.push(group);
+							groupsFromSemester.push({ ...group, date: thursday.date });
 						}
 					});
 				});
 
+				// Filter presentations this user is part of
 				const worksFromSemester = [];
-
-				semester.thursdays.map((thursday) => {
-					thursday.groups.map((group) => {
-						group.presentations.map((presentation) => {
-							presentation.presenters.map((presenter) => {
+				semester.thursdays.forEach((thursday) => {
+					(thursday.groups || []).forEach((group) => {
+						(group.presentations || []).forEach((presentation) => {
+							(presentation.presenters || []).forEach((presenter) => {
 								if (presenter.id === user.id) {
-									presentation.thursday_id = thursday.id;
-									worksFromSemester.push(presentation);
+									worksFromSemester.push({ ...presentation, thursday_id: thursday.id });
 								}
 							});
 						});
 					});
 				});
 
-				const groupsBeforeMid = groupsFromSemester.slice(0, Math.ceil(groupsFromSemester.length / 2));
-				const groupsAfterMid = groupsFromSemester.slice(Math.ceil(groupsFromSemester.length / 2));
+				// Split groups into before and after middle
+				const mid = Math.ceil(groupsFromSemester.length / 2);
+				const groupsBeforeMid = groupsFromSemester.slice(0, mid);
+				const groupsAfterMid = groupsFromSemester.slice(mid);
 
 				return (
 					<tr key={user.id}>
@@ -51,9 +51,9 @@ export default function ManageUsersTable({ users = [], semester }) {
 						<td>
 							Total in Semester: {worksFromSemester.length}
 							<ul>
-								{worksFromSemester.map((presentation) => (
+								{(worksFromSemester || []).map((presentation) => (
 									<li key={`presentation.id:${presentation.id}`}>
-										<Link href={`/thursdays/${presentation.thursday_id}`}> {presentation.name}</Link>
+										<Link href={`/thursdays/${presentation.thursday_id}`}>{presentation.name}</Link>
 									</li>
 								))}
 							</ul>
