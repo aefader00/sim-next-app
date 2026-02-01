@@ -43,7 +43,7 @@ export default function ManageUsersTable({ users = [], semester }) {
 				const groupsAfterMid = groupsFromSemester.slice(mid);
 
 				return (
-					<tr key={user.id}>
+					<tr>
 						<td>
 							<Link href={`/users/${user.username}/`}>{user.name}</Link>
 						</td>
@@ -52,7 +52,7 @@ export default function ManageUsersTable({ users = [], semester }) {
 							Total in Semester: {worksFromSemester.length}
 							<ul>
 								{(worksFromSemester || []).map((presentation) => (
-									<li key={`presentation.id:${presentation.id}`}>
+									<li>
 										<Link href={`/thursdays/${presentation.thursday_id}`}>{presentation.name}</Link>
 									</li>
 								))}
@@ -63,7 +63,7 @@ export default function ManageUsersTable({ users = [], semester }) {
 							<div>Total Before Middle of Semester: {groupsBeforeMid.length}</div>
 							<ul>
 								{groupsBeforeMid.map((group) => (
-									<li key={`group.id:${group.id}`}>
+									<li>
 										<Link href={`/thursdays/${group.thursday_id}`}>
 											{group.name} ({group.date.toLocaleDateString()})
 										</Link>
@@ -74,7 +74,7 @@ export default function ManageUsersTable({ users = [], semester }) {
 							<div>Total After Middle of Semester: {groupsAfterMid.length}</div>
 							<ul>
 								{groupsAfterMid.map((group) => (
-									<li key={`group.id:${group.id}`}>
+									<li>
 										<Link href={`/thursdays/${group.thursday_id}`}>
 											{group.name} ({group.date.toLocaleDateString()})
 										</Link>
