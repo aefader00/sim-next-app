@@ -13,7 +13,7 @@ export async function ContentPage({ button, query, header, children, filters }) 
 			<SearchBar title={header}>
 				{button ? button : null}
 				<SearchInput query={query} />
-				<SearchFilter filter={"semester"} options={semesters} defaultValue={filters.semester} />
+				<SearchFilter filter={"semester"} options={semesters} defaultValue={filters?.semester ?? null} />
 			</SearchBar>
 
 			<div
