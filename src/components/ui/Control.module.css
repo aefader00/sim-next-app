@@ -7,10 +7,10 @@
 .face {
 	position: relative;
 	z-index: 1;
-	border: 3px solid #222222;
-	border-radius: 10px;
+	border: 2px solid #222222;
+	border-radius: 5px;
 	background: linear-gradient(#f58a2a, #f26419);
-	padding: 10px 16px;
+	padding: 5px 5px;
 	font-weight: bold;
 	cursor: pointer;
 	transition: transform 0.02s ease;
@@ -18,7 +18,7 @@
 	width: 100%;
 	white-space: nowrap; /* prevent breaking */
 	box-sizing: border-box; /* include padding in width */
-	transform: translateY(-4px);
+	transform: translateY(-2px);
 	text-decoration: none;
 	color: inherit;
 }
@@ -31,7 +31,7 @@
 	position: absolute;
 	inset: 0;
 	background: #222222;
-	border-radius: 10px;
+	border-radius: 5px;
 	z-index: 0;
 }
 

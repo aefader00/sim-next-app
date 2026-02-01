@@ -1,8 +1,12 @@
 import ManageContentTable from "./ManageContentTable";
 import Link from "next/link";
-import { formatNiceListFromArray } from "../../utilities";
 
 export default function ManageUsersTable({ users = [], semester }) {
+	// Calculate middle date of semester
+	const thursdayDates = (semester.thursdays || []).map((t) => t.date).sort((a, b) => new Date(a) - new Date(b));
+	const midIndex = Math.floor(thursdayDates.length / 2);
+	const middleDate = thursdayDates[midIndex] || new Date(); // fallback if empty
+
 	return (
 		<ManageContentTable
 			head={
@@ -13,9 +17,9 @@ export default function ManageUsersTable({ users = [], semester }) {
 				</tr>
 			}
 			body={users.map((user) => {
-				// Filter groups this user is part of in this semester
+				// Gather all productions in the semester
 				const groupsFromSemester = [];
-				semester.thursdays.forEach((thursday) => {
+				(semester.thursdays || []).forEach((thursday) => {
 					(user.productions || []).forEach((group) => {
 						if (group.thursday_id === thursday.id) {
 							groupsFromSemester.push({ ...group, date: thursday.date });
@@ -23,24 +27,23 @@ export default function ManageUsersTable({ users = [], semester }) {
 					});
 				});
 
-				// Filter presentations this user is part of
+				// Gather all works the user is part of
 				const worksFromSemester = [];
-				semester.thursdays.forEach((thursday) => {
+				(semester.thursdays || []).forEach((thursday) => {
 					(thursday.groups || []).forEach((group) => {
 						(group.presentations || []).forEach((presentation) => {
 							(presentation.presenters || []).forEach((presenter) => {
 								if (presenter.id === user.id) {
-									worksFromSemester.push({ ...presentation, thursday_id: thursday.id });
+									worksFromSemester.push({ ...presentation, thursday_id: thursday.id, date: thursday.date });
 								}
 							});
 						});
 					});
 				});
 
-				// Split groups into before and after middle
-				const mid = Math.ceil(groupsFromSemester.length / 2);
-				const groupsBeforeMid = groupsFromSemester.slice(0, mid);
-				const groupsAfterMid = groupsFromSemester.slice(mid);
+				// Split works based on date compared to middleDate
+				const worksBeforeMid = worksFromSemester.filter((work) => new Date(work.date) < new Date(middleDate));
+				const worksAfterMid = worksFromSemester.filter((work) => new Date(work.date) >= new Date(middleDate));
 
 				return (
 					<tr key={user.id}>
@@ -49,34 +52,36 @@ export default function ManageUsersTable({ users = [], semester }) {
 						</td>
 
 						<td>
-							Total in Semester: {worksFromSemester.length}
+							Total in Semester: {groupsFromSemester.length}
 							<ul>
-								{(worksFromSemester || []).map((presentation) => (
-									<li key={`presentation.id:${presentation.id}`}>
-										<Link href={`/thursdays/${presentation.thursday_id}`}>{presentation.name}</Link>
+								{(groupsFromSemester || []).map((production) => (
+									<li key={`production.id:${production.id}`}>
+										<Link href={`/thursdays/${production.thursday_id}`}>
+											{production.name} ({production.date.toLocaleDateString()})
+										</Link>
 									</li>
 								))}
 							</ul>
 						</td>
 
 						<td>
-							<div>Total Before Middle of Semester: {groupsBeforeMid.length}</div>
+							<div>Total Before Middle of Semester: {worksBeforeMid.length}</div>
 							<ul>
-								{groupsBeforeMid.map((group) => (
-									<li key={`group.id:${group.id}`}>
-										<Link href={`/thursdays/${group.thursday_id}`}>
-											{group.name} ({group.date.toLocaleDateString()})
+								{worksBeforeMid.map((work) => (
+									<li key={`work.id:${work.id}`}>
+										<Link href={`/thursdays?semester=All&thursdays=${work.group_id}`}>
+											{work.name} ({work.date.toLocaleDateString()})
 										</Link>
 									</li>
 								))}
 							</ul>
 							<hr />
-							<div>Total After Middle of Semester: {groupsAfterMid.length}</div>
+							<div>Total After Middle of Semester: {worksAfterMid.length}</div>
 							<ul>
-								{groupsAfterMid.map((group) => (
-									<li key={`group.id:${group.id}`}>
-										<Link href={`/thursdays/${group.thursday_id}`}>
-											{group.name} ({group.date.toLocaleDateString()})
+								{worksAfterMid.map((work) => (
+									<li key={`work.id:${work.id}`}>
+										<Link href={`/thursdays?semester=All&thursdays=${work.group_id}`}>
+											{work.name} ({work.date.toLocaleDateString()})
 										</Link>
 									</li>
 								))}
