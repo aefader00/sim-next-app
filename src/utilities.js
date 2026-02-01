@@ -1,20 +1,27 @@
-export function getArrayfromSelectedKeys(array, selectedKeys) {
-	return selectedKeys.map((key) => new Map(array.map((object) => [object.key, object])).get(key));
+export function getArrayfromSelectedKeys(array = [], selectedKeys = []) {
+	const map = new Map((array || []).map((obj) => [obj.key, obj]));
+	return (selectedKeys || []).map((key) => map.get(key)).filter(Boolean); // remove undefined
 }
 
-export function formatNiceListFromArray(array) {
-	let formattedNiceList = [];
-	if (array.length === 1) {
-		formattedNiceList = <span key={`${array[0].key}:wrapper`}>{array[0]}</span>;
-	} else if (array.length === 2) {
-		formattedNiceList = (
+export function formatNiceListFromArray(array = []) {
+	if (!array.length) return null;
+
+	// Handle primitive strings or objects with .key
+	const items = array.map((item, i) => {
+		const text = typeof item === "string" ? item : item.name || String(item);
+		const key = typeof item === "string" ? `str-${i}` : item.key || `obj-${i}`;
+		return { text, key };
+	});
+
+	if (items.length === 1) return <span key={`${items[0].key}-wrapper`}>{items[0].text}</span>;
+	if (items.length === 2)
+		return (
 			<span>
-				{array[0]} and {array[1]}
+				{items[0].text} and {items[1].text}
 			</span>
 		);
-	} else {
-		formattedNiceList = array.slice(0, -1).map((author) => <span key={`${author.key}:wrapper`}>{author}, </span>);
-		formattedNiceList.push(<span key={`${array[array.length - 1].key}:wrapper`}>and {array[array.length - 1]}</span>);
-	}
-	return <>{formattedNiceList}</>;
+
+	const formatted = items.slice(0, -1).map((item) => <span key={`${item.key}-wrapper`}>{item.text}, </span>);
+	formatted.push(<span key={`${items[items.length - 1].key}-wrapper`}>and {items[items.length - 1].text}</span>);
+	return <>{formatted}</>;
 }
