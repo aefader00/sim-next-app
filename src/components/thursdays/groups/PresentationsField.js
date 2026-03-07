@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import WorkForm from "./works/WorkForm";
-import Button from "../../button";
-
+import Button from "../../ui/Button";
 export default function PresentationsField({ defaultPresentations = [], onChange, users }) {
 	const [presentations, setPresentations] = useState(() =>
-		defaultPresentations.map((presentation) => ({ ...presentation, index: presentation.index ?? uuidv4() }))
+		defaultPresentations.map((presentation) => ({ ...presentation, index: presentation.index ?? uuidv4() })),
 	);
 
 	useEffect(() => {
@@ -30,7 +29,7 @@ export default function PresentationsField({ defaultPresentations = [], onChange
 	};
 
 	return (
-		<div style={{ display: "flex", flexDirection: "column", width: "100%", backgroundColor: "lightgrey", borderRadius: "0.5rem", margin: "0.5rem" }}>
+		<div style={{ display: "flex", flexDirection: "column", width: "100%", backgroundColor: "lightgrey", borderRadius: "0.5rem" }}>
 			{presentations.map((presentation, index) => (
 				<WorkForm
 					key={presentation.index}
@@ -41,7 +40,11 @@ export default function PresentationsField({ defaultPresentations = [], onChange
 					onDelete={() => handleDelete(presentation.index)}
 				/>
 			))}
-			<Button onClick={handleAdd} value="Add a New Presentation" />
+			<span style={{ textAlign: "center", margin: "1rem" }}>
+				<Button type="button" onClick={handleAdd}>
+					Add Presentation
+				</Button>
+			</span>
 		</div>
 	);
 }

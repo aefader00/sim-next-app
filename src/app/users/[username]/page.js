@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import styles from "../../../components/users/user.module.css";
 import SearchBar from "@/components/ui/SearchBar";
 import Link from "next/link";
+import { LogoutButton } from "@/components/AuthenticationButtons";
 
 export default async function User({ params }) {
 	const { username } = await params;
@@ -38,6 +39,7 @@ export default async function User({ params }) {
 							Edit Profile
 						</Button>
 					)}
+					<LogoutButton />
 				</SearchBar>
 
 				<div className={styles.UserData}>

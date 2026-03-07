@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "antd";
+import { Input, Switch } from "antd";
 
 import { useState } from "react";
 
@@ -10,6 +10,7 @@ import ImageUpload from "@/components/ImageUpload";
 
 export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false }) {
 	const [imageFile, setImageFile] = useState(null);
+	const [isAdmin, setIsAdmin] = useState(user?.admin || false);
 	return (
 		<ContentForm
 			action={(formData) => {
@@ -20,7 +21,9 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 					email: formData.get("email"),
 					link: formData.get("link"),
 					about: formData.get("about"),
+					admin: isAdmin,
 				};
+				console.log("data:", data);
 				if (user) {
 					data.id = user.id;
 					data.username = user.username;
@@ -55,6 +58,14 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 					</p>
 				)}
 			</div>
+			{!isCurrentUserAdmin ? null : (
+				<div>
+					<FormLabel>{user ? "Edit Admin status" : "Add Admin status"}</FormLabel>
+					<FormInput>
+						<Switch checked={isAdmin} onChange={(checked) => setIsAdmin(checked)} />
+					</FormInput>
+				</div>
+			)}
 			<div>
 				<FormLabel>{user ? "Edit Email" : "Add Email"}</FormLabel>
 				<FormInput>

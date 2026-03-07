@@ -3,7 +3,7 @@
 
 import { Input } from "antd";
 
-import Button from "@/components/button";
+import Button from "../../../ui/Button";
 
 import { FormLabel, FormInput } from "../../../ContentForm";
 import UsersTransfer from "@/components/UsersTransfer";
@@ -29,7 +29,7 @@ export default function WorkForm({ onChange, onDelete, defaultValue, users }) {
 			}}
 		>
 			<b>Presentation</b>
-			<Button onClick={onDelete} value="Trash 🗑" />
+			<Button onClick={onDelete}>Trash</Button>
 			<br />
 			<FormLabel style={{ display: "block", padding: "0.5rem" }}>Name</FormLabel>
 			<FormInput>

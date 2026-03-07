@@ -4,15 +4,11 @@ export default function Home() {
 	redirect("/semesters"); // redirects immediately
 }
 // import styles
-import styles from "../../components/admin/admin.module.css";
-import Link from "next/link";
-import { getFilteredUsers, getAllSemesters, getSemesterFromName } from "../../actions";
+// import styles from "../../components/admin/admin.module.css";
+// import Link from "next/link";
+// import { getFilteredUsers, getAllSemesters, getSemesterFromName } from "../../actions";
 
-import SearchBar from "../../components/searchbar";
-
-import AddContentButton from "../../components/AddContentButton";
-
-import LinkButton from "../../components/linkbutton";
+// import SearchBar from "../../components/searchbar";
 
 // export default async function Admin({ searchParams }) {
 // 	const filters = await searchParams;

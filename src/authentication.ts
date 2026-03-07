@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "./src/database";
+
+import { prisma } from "@/database";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter: PrismaAdapter(prisma),
@@ -16,16 +18,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			},
 		}),
 	],
-
 	callbacks: {
-		async signIn({ user, account, profile }) {
+		async signIn({ user, account }) {
 			// Add a check for account being non-null
 			if (!account) {
 				console.error("Account is null or undefined");
 				return false; // Prevent further execution if account is invalid
 			}
 
-			var defaultSemester;
+			let defaultSemester;
 			const firstSemester = await prisma.semester.findFirst({
 				include: { thursdays: { include: { groups: true } }, users: true },
 			});
@@ -39,10 +40,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			const email = user.email as string;
 
 			const isUserFound = await prisma.user.findFirst({ where: { email: email }, include: { accounts: true } });
-
-			if (isUserFound == null) {
-				return "/";
-			}
 
 			if (isUserFound?.accounts.length == 0) {
 				try {
@@ -66,12 +63,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 						},
 					});
 				} catch (error) {
-					console.error("Error during user database upsert on sign in:", error);
-					return false; // Deny sign in.
+					console.error("ERROR:", error);
+					// Deny sign in.
+					return false;
 				}
 			}
 
-			return true; // Allow sign in.
+			// Allow sign in.
+			return true;
 		},
 	},
 });

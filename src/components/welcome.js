@@ -1,21 +1,23 @@
-import LoginButton from "./loginbutton";
+import { LoginButton } from "@/components/AuthenticationButtons";
 
-export default async function Welcome() {
+export default function Welcome() {
 	return (
-		<html>
-			<body>
-				<div style={{ textAlign: "center" }}>
-					<h1>
-						<b>Welcome to SIM!</b>
-					</h1>
-					<img src={"/icon.jpg"} />
-					<p>
-						This is the website for the <b>Studio for Interrelated Media (SIM)</b> department of the <b>Massachusetts College of Art and Design</b>.
-					</p>
-					<p>This is an internal website for SIM students and faculty. Please sign in with your MassArt account to continue.</p>
+		<div style={{ display: "flex", justifyContent: "center" }}>
+			<div style={{ maxWidth: "40rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+				<h1>
+					<b>Welcome to SIM</b>
+				</h1>
+				<p>
+					This is a private website for the students and faculty of <b>Studio for Interrelated Media (SIM)</b> department of the{" "}
+					<b>Massachusetts College of Art and Design</b>. Please login with your MassArt account to continue.
+				</p>
+				<h2 style={{ textAlign: "center" }}>
 					<LoginButton />
-				</div>
-			</body>
-		</html>
+				</h2>
+				<p style={{ color: "orangered" }}>
+					<i>If you cannot login with your MassArt account, contact the SIM faculty for help.</i>
+				</p>
+			</div>
+		</div>
 	);
 }

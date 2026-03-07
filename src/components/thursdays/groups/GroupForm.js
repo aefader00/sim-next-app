@@ -39,7 +39,6 @@ export default function GroupForm({ onSubmit, group, thursday, users, thursdays 
 				if (group) data.id = group.id;
 				onSubmit(data);
 			}}
-			button={group ? "Edit Group" : "Add Group"}
 		>
 			<FormLabel>{group ? "Edit Name" : "Add Name"}</FormLabel>
 			<FormInput>
@@ -56,7 +55,7 @@ export default function GroupForm({ onSubmit, group, thursday, users, thursdays 
 				<Cascader style={{ width: "100%" }} options={thursdays} onChange={setSelectedThursday} defaultValue={selectedThursday} />
 			</FormInput>
 
-			<FormLabel>Producers</FormLabel>
+			<FormLabel>Producers & Faculty</FormLabel>
 			<FormInput>
 				<UsersTransfer users={users} selectedUserKeys={selectedProducersKeys} setSelectedUserKeys={setSelectedProducersKeys} />
 			</FormInput>

@@ -1,7 +1,5 @@
 "use client";
 
-import GoodButton from "../GoodButton";
-import SearchFilter from "../searchfilter";
 import ContentManager from "./ContentManager";
 import ManageUsersTable from "./ManageUsersTable";
 

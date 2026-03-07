@@ -1,32 +1,31 @@
 import Link from "next/link";
-import AddContentButton from "../AddContentButton";
-import EditContentButton from "../EditContentButton";
 import styles from "./thursdaycard.module.css";
 import WorkCard from "./groups/works/WorkCard";
+import Button from "../ui/Button";
 export default function ThursdayCard({ thursday }) {
 	return (
 		<div className={styles.ThursdayCard}>
-			<h1>
-				<Link href={`/thursdays/${thursday.id}`}>
-					<b>{thursday.name}</b> ({thursday.date.toLocaleDateString()})
-				</Link>
-				<EditContentButton href={`/thursdays/${thursday.id}/edit`} />
-			</h1>
+			<span>
+				<span style={{ fontSize: "1.75rem" }}>
+					<Link href={`/thursdays/${thursday.id}`}>
+						<b>{thursday.name}</b> ({thursday.date.toLocaleDateString()})
+					</Link>
+				</span>
+				<Button href={`/thursdays/${thursday.id}/edit`}>Edit</Button>
+			</span>
 			<div className={styles.GroupsTable}>
-				<h2>
-					Groups
-					<AddContentButton href={`/thursdays/${thursday.id}/groups/add`} />
-				</h2>
 				{thursday.groups.length > 0 ? (
 					thursday.groups.map((group) => {
 						var producers = group.producers.filter((user) => user.admin === false);
 						var faculty = group.producers.filter((user) => user.admin === true);
 						return (
 							<div className={styles.GroupCard} key={group.id}>
-								<h3>
-									<b>{group.name}</b> ({group.location})
-									<EditContentButton href={`/thursdays/${thursday.id}/groups/${group.id}/edit`} />
-								</h3>
+								<span>
+									<span style={{ fontSize: "1.25rem" }}>
+										<b>{group.name}</b> ({group.location})
+									</span>
+									<Button href={`/thursdays/${thursday.id}/groups/${group.id}/edit`}>Edit</Button>
+								</span>
 								<hr />
 								<div>
 									<b>Faculty:</b>
@@ -67,7 +66,7 @@ export default function ThursdayCard({ thursday }) {
 
 								<div>
 									<b>Presentations:</b>
-									<div style={{ padding: "0.5rem" }}>
+									<div style={{ padding: "0.5rem", display: "flex", flexDirection: "column" }}>
 										{group.presentations.length > 0 ? (
 											group.presentations?.map((work) => {
 												return <WorkCard key={work.id} work={work} />;
