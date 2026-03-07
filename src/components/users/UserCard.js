@@ -4,7 +4,7 @@ import styles from "./UserCard.module.css";
 
 export default function UserCard({ user }) {
 	return (
-		<Control as="a" href={`/users/${user.username}`} className={styles.UserCard}>
+		<Control as="a" href={`/users/${user.username}`} className={user.admin ? styles.UserCardAdmin : styles.UserCard}>
 			<div className={`${styles.faceContent}`}>
 				<div className={styles.imageWrapper}>
 					<Image

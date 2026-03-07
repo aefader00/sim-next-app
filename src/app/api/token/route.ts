@@ -1,5 +1,5 @@
 // /app/api/token/route.ts
-import { auth } from "@/../auth";
+import { auth } from "@/authentication";
 import { prisma } from "../../../database";
 import { NextResponse } from "next/server";
 

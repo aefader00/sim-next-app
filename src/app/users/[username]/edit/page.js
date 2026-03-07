@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import UserForm from "../../../../components/users/UserForm";
-import RemoveContentButton from "../../../../components/RemoveContentButton";
+import Button from "@/components/ui/Button";
 
 import { handleImageUpload, getUser, editUser, removeUser, getCurrentUser, isCurrentUserAdmin } from "../../../../actions";
 
@@ -30,7 +30,6 @@ export default async function EditUser({ params }) {
 						If you want to unlist this user from a semester but keep their data in the database, go to the admin dashboard and edit the semester that you want
 						to unlist this user from.
 					</p>
-					<RemoveContentButton onSubmit={onSubmitRemoveUser} data={user} />
 				</div>
 			) : null}
 		</div>

@@ -7,13 +7,8 @@ import SearchBar from "../../components/ui/SearchBar";
 
 import SearchFilter from "../../components/ui/SearchFilter";
 
-import AddContentButton from "../../components/AddContentButton";
-
-import LinkButton from "../../components/linkbutton";
-
 import UsersManager from "../../components/semesters/UsersManager";
 import ThursdaysManager from "../../components/semesters/ThursdaysManager";
-import GoodButton from "../../components/GoodButton";
 
 import Button from "../../components/ui/Button";
 

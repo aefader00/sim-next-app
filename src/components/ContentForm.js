@@ -1,13 +1,13 @@
 import Form from "next/form";
-import Button from "./button";
+import Button from "./ui/Button";
 
 import styles from "./ContentForm.module.css";
 
-export function ContentForm({ action, button = "Submit", children }) {
+export function ContentForm({ action, children }) {
 	return (
 		<Form action={action} className={styles.ContentForm}>
 			{children}
-			<Button type="submit" value={button} />
+			<Button type="submit">Submit</Button>
 		</Form>
 	);
 }

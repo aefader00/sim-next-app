@@ -1,7 +1,7 @@
 "use client";
 import { LogIn } from "../actions";
-import Button from "./button";
+import Button from "./ui/Button";
 
 export default function LoginButton() {
-	return <Button value="Sign in with your MassArt account ✨" onClick={LogIn} />;
+	return <Button onClick={LogIn}>Sign in with your MassArt account ✨</Button>;
 }

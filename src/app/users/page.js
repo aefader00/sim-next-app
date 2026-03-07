@@ -1,7 +1,7 @@
 import { getFilteredUsers } from "../../actions";
 
 import { ContentPage, ContentTable } from "../../components/contentpage";
-import AddContentButton from "@/components/AddContentButton";
+
 import Button from "@/components/ui/Button";
 
 import styles from "../../components/users/users.module.css";

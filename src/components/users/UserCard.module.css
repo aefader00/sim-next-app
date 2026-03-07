@@ -22,3 +22,8 @@
 	background: linear-gradient(white, whitesmoke); /* white → light grey */
 	white-space: normal; /* allow wrapping */
 }
+
+.UserCardAdmin {
+	background: linear-gradient(white, lightcyan); /* white → light grey */
+	white-space: normal; /* allow wrapping */
+}

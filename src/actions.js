@@ -1,8 +1,6 @@
 "use server";
 
-import { auth } from "../auth";
-
-import { signIn, signOut } from "../auth";
+import { auth } from "@/authentication";
 
 import { unstable_noStore as noStore } from "next/cache";
 
@@ -161,10 +159,10 @@ export async function getGroup(id) {
 	return group;
 }
 
-export async function editUser({ id, name, about, image, email, link, pronouns }) {
+export async function editUser({ id, name, about, image, email, link, pronouns, admin }) {
 	return prisma.user.update({
 		where: { id },
-		data: { name, about, image, link, pronouns, email },
+		data: { name, about, image, link, pronouns, email, admin },
 	});
 }
 
@@ -182,6 +180,7 @@ export async function addUser(data) {
 				link: data.link,
 				pronouns: data.pronouns,
 				semesters: { connect: { id: current_semester[0].id } },
+				admin: data.admin,
 			},
 		});
 	} catch (error) {
@@ -574,14 +573,4 @@ export async function addWork(data) {
 		console.error("Database Error:", error);
 		throw new Error("Failed to addGroup(data) with data:", data);
 	}
-}
-
-export async function LogOut() {
-	"use server";
-	await signOut("google");
-}
-
-export async function LogIn() {
-	"use server";
-	await signIn("google");
 }
