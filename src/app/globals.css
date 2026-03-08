@@ -2,7 +2,7 @@
 
 html,
 body {
-	font-family: "Jost", serif;
+	font-family: Verdana, Arial, "Jost", serif;
 	margin: 0;
 	background: linear-gradient(white, whitesmoke);
 	background-attachment: fixed;
