@@ -43,8 +43,10 @@
 	border-radius: 8px;
 	cursor: pointer;
 	box-shadow: 0 4px 0 #000;
-	transition: transform 0.01s ease, box-shadow 0.01s ease;
-	background: #ff8c1a; /* primary button color */
+	transition:
+		transform 0.01s ease,
+		box-shadow 0.01s ease;
+	background: #ff8c2a; /* primary button color */
 	color: #000;
 	appearance: none;
 	-webkit-appearance: none;

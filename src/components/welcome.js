@@ -14,7 +14,7 @@ export default function Welcome() {
 				<h2 style={{ textAlign: "center" }}>
 					<LoginButton />
 				</h2>
-				<p style={{ color: "orangered" }}>
+				<p style={{ color: "#e75f05" }}>
 					<i>If you cannot login with your MassArt account, contact the SIM faculty for help.</i>
 				</p>
 			</div>

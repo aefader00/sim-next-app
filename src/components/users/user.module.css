@@ -28,10 +28,10 @@
 
 .UserImage img {
 	width: 100%; /* take full width of column */
-	aspect-ratio: 1 / 1; /* maintain square */
+	aspect-ratio: 1 / 1.4; /* maintain rect */
 	object-fit: cover;
 	border-radius: 5px;
-	border: 3px solid #000; /* black outline */
+	border: 3px solid #033; /* black outline */
 }
 
 /* Smaller photo on mobile */
