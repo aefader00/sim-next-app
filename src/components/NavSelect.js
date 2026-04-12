@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import Control from "@/components/ui/Control";
-import styles from "./Control.module.css";
+import Block from "@/components//Block";
+import styles from "./Block.module.css";
 
 export default function NavSelect({ pages }) {
 	const router = useRouter();
@@ -12,12 +12,12 @@ export default function NavSelect({ pages }) {
 		router.push(e.target.value);
 	};
 	return (
-		<Control className={styles.inputFace} as="select" onChange={handleChange}>
+		<Block className={styles.inputFace} as="select" onChange={handleChange}>
 			{pages.map((p) => (
 				<option key={p.href} value={p.href}>
 					{p.label}
 				</option>
 			))}
-		</Control>
+		</Block>
 	);
 }

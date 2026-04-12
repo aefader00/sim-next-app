@@ -1,10 +1,10 @@
-import Control from "../ui/Control";
+import Block from "..//Block";
 import Image from "next/image";
 import styles from "./UserCard.module.css";
 
 export default function UserCard({ user }) {
 	return (
-		<Control as="a" href={`/users/${user.username}`} className={user.admin ? styles.UserCardAdmin : styles.UserCard}>
+		<Block as="a" href={`/users/${user.username}`} className={user.admin ? styles.UserCardAdmin : styles.UserCard}>
 			<div className={`${styles.faceContent}`}>
 				<div className={styles.imageWrapper}>
 					<Image
@@ -20,6 +20,6 @@ export default function UserCard({ user }) {
 				</div>
 				<div className={styles.name}>{user.name}</div>
 			</div>
-		</Control>
+		</Block>
 	);
 }

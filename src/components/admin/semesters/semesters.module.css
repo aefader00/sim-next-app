@@ -5,13 +5,13 @@
 }
 
 /* Title */
-.title {
+.label {
 	flex-shrink: 0;
 	margin: 0;
 }
 
-/* Controls container */
-.controls {
+/* Blocks container */
+.Blocks {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
@@ -36,7 +36,7 @@
 		text-align: center;
 	}
 
-	.controls {
+	.Blocks {
 		justify-content: space-between;
 	}
 

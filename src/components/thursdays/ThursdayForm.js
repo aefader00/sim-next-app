@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { DatePicker, Input, Select, Transfer } from "antd";
 
-import { ContentForm, FormLabel, FormInput } from "../ContentForm";
+import { FormWrapper, FormLabel, FormInput } from "../Form";
 
 import dayjs from "dayjs";
 
@@ -24,7 +24,7 @@ export default function ThursdayForm({ onSubmit, thursday, semester_ids, groups 
 		setSelectedGroupsKeys(event);
 	};
 	return (
-		<ContentForm
+		<FormWrapper
 			action={(formData) => {
 				const data = {
 					name: formData.get("name"),
@@ -64,6 +64,6 @@ export default function ThursdayForm({ onSubmit, thursday, semester_ids, groups 
 					render={(item) => item.name}
 				/>
 			</FormInput>
-		</ContentForm>
+		</FormWrapper>
 	);
 }

@@ -199,7 +199,7 @@ sim-next-app/src/app/
 │	│   ├── edit/                   # Edit selected user
 │	├── add/                        # Add new user
 ├── globals.css                     # Website-wide styles
-├── layour.js                       # Website-wide layout (navbar, etc.)
+├── layour.js                       # Website-wide layout (NavBar, etc.)
 └── page.js                         # Home page. All page folders have a page.js.
 ```
 

@@ -3,9 +3,9 @@
 
 import { Input } from "antd";
 
-import Button from "../../../ui/Button";
+import Button from "../../..//Button";
 
-import { FormLabel, FormInput } from "../../../ContentForm";
+import { FormLabel, FormInput } from "../../../Form";
 import UsersTransfer from "@/components/UsersTransfer";
 
 export default function WorkForm({ onChange, onDelete, defaultValue, users }) {

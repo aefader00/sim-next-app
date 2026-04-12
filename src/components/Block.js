@@ -1,10 +1,10 @@
 "use client";
 
-import styles from "./Control.module.css";
+import styles from "./Block.module.css";
 import { forwardRef, useState } from "react";
 import clsx from "clsx";
 
-const Control = forwardRef(function Control({ as = "button", children, className, disabled, onClick, ...props }, ref) {
+const Block = forwardRef(function Block({ as = "button", children, className, disabled, onClick, ...props }, ref) {
 	const [pressed, setPressed] = useState(false);
 
 	const handleDown = () => !disabled && setPressed(true);
@@ -34,4 +34,4 @@ const Control = forwardRef(function Control({ as = "button", children, className
 	);
 });
 
-export default Control;
+export default Block;

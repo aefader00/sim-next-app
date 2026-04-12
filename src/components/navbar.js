@@ -1,32 +1,30 @@
-import { isCurrentUserAdmin, LogOut } from "../actions";
-import styles from "./navbar.module.css";
-import Button from "@/components/ui/Button";
-import NavSelect from "./ui/NavSelect";
+import styles from "./NavBar.module.css";
+import Button from "@/components/Button";
+import NavSelect from "./NavSelect";
 
-export default async function Navbar({ session }) {
+import { auth } from "@/authentication";
+
+export default async function NavBar() {
+	const session = await auth();
 	if (!session) {
 		return (
-			<nav className={styles.navbar}>
-				{/* Brand always visible */}
+			<nav className={styles.NavBar}>
 				<div className={styles.brand}>SIM</div>
 			</nav>
 		);
 	} else {
-		const admin = await isCurrentUserAdmin();
+		const admin = session?.user?.admin ?? false;
 
 		const pages = [
 			{ href: "/users", label: "Names & Faces" },
 			{ href: "/thursdays", label: "Thursdays" },
-			...(admin ? [{ href: "/semesters", label: "Admin" }] : []),
+			...(admin ? [{ href: "/admin", label: "Admin" }] : []),
 			{ href: `/users/${session.user.username}`, label: "My Profile" },
 		];
 
 		return (
-			<nav className={styles.navbar}>
-				{/* Brand always visible */}
+			<nav className={styles.NavBar}>
 				<div className={styles.brand}>SIM</div>
-
-				{/* Desktop Buttons */}
 				<div className={styles.desktopMenu}>
 					{pages.map((p) => (
 						<Button key={p.label} href={p.href}>
@@ -34,8 +32,6 @@ export default async function Navbar({ session }) {
 						</Button>
 					))}
 				</div>
-
-				{/* Mobile Dropdown */}
 				<div className={styles.mobileMenu}>
 					<NavSelect pages={pages} />
 				</div>

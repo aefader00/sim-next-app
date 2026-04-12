@@ -1,10 +1,14 @@
 import { redirect } from "next/navigation";
 import UserForm from "@/components/users/UserForm";
-import { addUser, isCurrentUserAdmin, handleImageUpload } from "../../../actions";
+import { addUser, handleImageUpload } from "../../../actions";
 import path from "path";
 import { copyFile } from "fs/promises";
 
+import { auth } from "@/authentication";
+
 export default async function AddUser() {
+	const session = await auth();
+	const isAdmin = session?.user?.admin ?? false;
 	async function onSubmitAddUser(data) {
 		"use server";
 		const username = data.email.split("@")[0];
@@ -26,11 +30,11 @@ export default async function AddUser() {
 		redirect(`/users/${username}`);
 	}
 
-	if (await isCurrentUserAdmin()) {
+	if (isAdmin) {
 		return (
 			<div>
 				<h2>Add User</h2>
-				<UserForm onSubmit={onSubmitAddUser} isCurrentUserAdmin={true} />
+				<UserForm onSubmit={onSubmitAddUser} isCurrentUserAdmin={isAdmin} />
 			</div>
 		);
 	} else {

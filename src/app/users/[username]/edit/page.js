@@ -1,9 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 
 import UserForm from "../../../../components/users/UserForm";
-import Button from "@/components/ui/Button";
+import Button from "@/components//Button";
 
-import { handleImageUpload, getUser, editUser, removeUser, getCurrentUser, isCurrentUserAdmin } from "../../../../actions";
+import { auth } from "@/authentication";
+
+import { handleImageUpload, getUser, editUser, removeUser, getCurrentUser } from "../../../../actions";
 
 export default async function EditUser({ params }) {
 	const { username } = await params;
@@ -14,12 +16,14 @@ export default async function EditUser({ params }) {
 	// Get the user data of the user you are signed in as.
 	const currentUser = await getCurrentUser();
 	if (!currentUser) return;
+	const session = await auth();
+	const isAdmin = session?.user?.admin ?? false;
 	return (
 		<div>
 			<h1>{user.name}</h1>
 			<div>
 				<h2>Edit User</h2>
-				<UserForm onSubmit={onSubmitEditUser} user={user} isCurrentUserAdmin={await isCurrentUserAdmin()} />
+				<UserForm onSubmit={onSubmitEditUser} user={user} isCurrentUserAdmin={isAdmin} />
 			</div>
 			<br />
 			{currentUser.admin == true ? (

@@ -5,10 +5,6 @@ export function getArrayfromSelectedKeys(array = [], selectedKeys = []) {
 	return (selectedKeys || []).map((key) => map.get(key)).filter(Boolean); // remove undefined
 }
 
-/**
- * Accepts an array of React elements only.
- * Returns nicely formatted list with commas and "and".
- */
 export function formatNiceListFromArray(elements = []) {
 	if (!elements.length) return null;
 
