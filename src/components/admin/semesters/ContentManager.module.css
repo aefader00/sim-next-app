@@ -6,13 +6,13 @@
 	flex-wrap: wrap;
 }
 
-.title {
+.label {
 	flex-shrink: 0;
 	margin: 0;
 	white-space: nowrap;
 }
 
-.controls {
+.Blocks {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
@@ -95,11 +95,11 @@
 		gap: 0.75rem;
 	}
 
-	.title {
+	.label {
 		text-align: center;
 	}
 
-	.controls {
+	.Blocks {
 		justify-content: space-between;
 	}
 

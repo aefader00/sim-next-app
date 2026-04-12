@@ -6,7 +6,7 @@ import { DatePicker, Input, Transfer } from "antd";
 
 const { RangePicker } = DatePicker;
 
-import { ContentForm, FormLabel, FormInput } from "../../ContentForm";
+import { FormWrapper, FormLabel, FormInput } from "../../Form";
 
 import dayjs from "dayjs";
 
@@ -28,7 +28,7 @@ export default function SemesterForm({ onSubmit, semester, usersFromCurrentSemes
 		setSelectedUsersKeys(event);
 	};
 	return (
-		<ContentForm
+		<FormWrapper
 			action={(formData) => {
 				const data = {
 					name: formData.get("name"),
@@ -49,13 +49,13 @@ export default function SemesterForm({ onSubmit, semester, usersFromCurrentSemes
 
 			<FormLabel>Select Dates</FormLabel>
 			<FormInput>
-				<RangePicker onChange={handleDatesChange} defaultValue={[dates[0], dates[1]]} disabled={semester ? true : false} />
+				<RangePicker onChange={handleDatesChange} defaultValue={[dates[0], dates[1]]} disabled={semester ? true : false} required />
 			</FormInput>
 
 			<FormLabel>Select Users</FormLabel>
 			<FormInput>
 				<Transfer dataSource={users} targetKeys={selectedUsersKeys} onChange={handleSelectedUsersKeysChange} oneWay showSearch render={(item) => item.name} />
 			</FormInput>
-		</ContentForm>
+		</FormWrapper>
 	);
 }

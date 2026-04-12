@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import WorkForm from "./works/WorkForm";
-import Button from "../../ui/Button";
+import Button from "../..//Button";
 export default function PresentationsField({ defaultPresentations = [], onChange, users }) {
 	const [presentations, setPresentations] = useState(() =>
 		defaultPresentations.map((presentation) => ({ ...presentation, index: presentation.index ?? uuidv4() })),

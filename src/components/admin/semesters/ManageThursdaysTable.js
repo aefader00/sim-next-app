@@ -1,6 +1,6 @@
 import ManageContentTable from "./ManageContentTable";
 import Link from "next/link";
-import { formatNiceListFromArray } from "../../utilities";
+import { formatNiceListFromArray } from "../../../utilities";
 
 export default function ManageThursdaysTable({ thursdays = [] }) {
 	return (

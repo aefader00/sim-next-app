@@ -4,7 +4,7 @@ import { Input, Switch } from "antd";
 
 import { useState } from "react";
 
-import { ContentForm, FormLabel, FormInput } from "../ContentForm";
+import { FormWrapper, FormLabel, FormInput } from "../Form";
 
 import ImageUpload from "@/components/ImageUpload";
 
@@ -12,7 +12,7 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 	const [imageFile, setImageFile] = useState(null);
 	const [isAdmin, setIsAdmin] = useState(user?.admin || false);
 	return (
-		<ContentForm
+		<FormWrapper
 			action={(formData) => {
 				const data = {
 					name: formData.get("name"),
@@ -23,7 +23,6 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 					about: formData.get("about"),
 					admin: isAdmin,
 				};
-				console.log("data:", data);
 				if (user) {
 					data.id = user.id;
 					data.username = user.username;
@@ -91,6 +90,6 @@ export default function UserForm({ onSubmit, user, isCurrentUserAdmin = false })
 					<Input name="about" defaultValue={user?.about} />
 				</FormInput>
 			</div>
-		</ContentForm>
+		</FormWrapper>
 	);
 }

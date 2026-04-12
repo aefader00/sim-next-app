@@ -1,16 +1,16 @@
 import { getUser, getCurrentUser } from "../../../actions";
-import NotFound from "../../../components/not-found";
-import WorkCard from "@/components/thursdays/groups/works/WorkCard";
-import Button from "@/components/ui/Button";
-import styles from "../../../components/users/user.module.css";
-import SearchBar from "@/components/ui/SearchBar";
+import { notFound, redirect } from "next/navigation";
+import Button from "@/components//Button";
+import styles from "../../../components/users/User.module.css";
+import Header from "@/components/Header";
 import Link from "next/link";
 import { LogoutButton } from "@/components/AuthenticationButtons";
+import Presentation from "@/components/PresentationCard";
 
 export default async function User({ params }) {
 	const { username } = await params;
 	const user = await getUser(username);
-	if (!user) return <NotFound category={"User"} query={username} />;
+	if (!user) return notFound();
 
 	const currentUser = await getCurrentUser();
 	if (!currentUser) return;
@@ -19,15 +19,13 @@ export default async function User({ params }) {
 
 	return (
 		<div className={styles.UserTable}>
-			{/* LEFT: PHOTO */}
 			<div className={styles.UserImage}>
 				<img src={user.image} alt={`${user.name}'s image`} />
 			</div>
 
-			{/* RIGHT: CONTENT */}
 			<div>
-				<SearchBar
-					title={
+				<Header
+					label={
 						<div style={{ fontWeight: "bolder", fontSize: "2rem" }}>
 							{user.name}
 							{user.admin ? " ✨" : null}
@@ -39,8 +37,8 @@ export default async function User({ params }) {
 							Edit Profile
 						</Button>
 					)}
-					<LogoutButton />
-				</SearchBar>
+					{user.id === currentUser.id ? <LogoutButton /> : null}
+				</Header>
 
 				<div className={styles.UserData}>
 					<div className={styles.DataRow}>
@@ -57,7 +55,7 @@ export default async function User({ params }) {
 						<div className={styles.Label}>Presentations</div>
 						<div className={styles.Value}>
 							{user.presentations?.length > 0 ? (
-								user.presentations.map((work) => <WorkCard key={work.id} work={work} />)
+								user.presentations.map((work) => <Presentation key={work.id} work={work} />)
 							) : (
 								<i>This user has not presented any work yet.</i>
 							)}

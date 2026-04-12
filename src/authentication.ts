@@ -1,12 +1,16 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-
 import { PrismaAdapter } from "@auth/prisma-adapter";
-
 import { prisma } from "@/database";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter: PrismaAdapter(prisma),
+
+	pages: {
+		signIn: "/login",
+		error: "/welcome",
+	},
+
 	providers: [
 		Google({
 			clientId: process.env.AUTH_GOOGLE_ID!,
@@ -18,59 +22,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			},
 		}),
 	],
+
 	callbacks: {
 		async signIn({ user, account }) {
-			// Add a check for account being non-null
-			if (!account) {
-				console.error("Account is null or undefined");
-				return false; // Prevent further execution if account is invalid
+			if (!account || !user?.email) {
+				return false;
 			}
 
-			let defaultSemester;
-			const firstSemester = await prisma.semester.findFirst({
-				include: { thursdays: { include: { groups: true } }, users: true },
+			const existingUser = await prisma.user.findUnique({
+				where: { email: user.email },
+				select: { id: true },
 			});
 
-			if (firstSemester) {
-				defaultSemester = firstSemester;
-			} else {
-				defaultSemester = { id: "" };
+			if (!existingUser) {
+				return "/";
 			}
 
-			const email = user.email as string;
+			return true;
+		},
 
-			const isUserFound = await prisma.user.findFirst({ where: { email: email }, include: { accounts: true } });
+		async jwt({ token }) {
+			if (!token.email) return token;
 
-			if (isUserFound?.accounts.length == 0) {
-				try {
-					await prisma.user.update({
-						where: {
-							// Check if the user already exists by email.
-							email: email,
-						},
-						data: {
-							accounts: {
-								create: {
-									type: account.type,
-									provider: account.provider,
-									providerAccountId: account.providerAccountId,
-									access_token: account.access_token,
-									refresh_token: account.refresh_token,
-									expires_at: account.expires_at,
-								},
-							},
-							semesters: { connect: { id: defaultSemester.id } },
-						},
-					});
-				} catch (error) {
-					console.error("ERROR:", error);
-					// Deny sign in.
-					return false;
+			const dbUser = await prisma.user.findUnique({
+				where: { email: token.email },
+				select: {
+					id: true,
+					admin: true,
+				},
+			});
+
+			if (dbUser) {
+				token.id = dbUser.id;
+				token.admin = dbUser.admin;
+			}
+
+			return token;
+		},
+
+		async session({ session, token }) {
+			if (!session?.user) return session;
+
+			if (token?.email) {
+				const dbUser = await prisma.user.findUnique({
+					where: { email: token.email },
+					select: { id: true, admin: true },
+				});
+
+				if (dbUser) {
+					session.user.id = dbUser.id;
+					session.user.admin = dbUser.admin;
 				}
 			}
 
-			// Allow sign in.
-			return true;
+			return session;
 		},
 	},
 });

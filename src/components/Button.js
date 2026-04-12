@@ -1,6 +1,6 @@
 "use client";
 
-import Control from "./Control";
+import Block from "./Block";
 import { useRouter } from "next/navigation";
 
 export default function Button({ href, onClick, children, ...props }) {
@@ -15,8 +15,8 @@ export default function Button({ href, onClick, children, ...props }) {
 	};
 
 	return (
-		<Control as="button" onClick={handleClick} {...props}>
+		<Block as="button" onClick={handleClick} {...props}>
 			{children}
-		</Control>
+		</Block>
 	);
 }

@@ -2,7 +2,7 @@
 
 import { logIn, logOut } from "@/actions/authenticate";
 
-import Button from "@/components/ui/Button";
+import Button from "@/components/Button";
 
 export function LoginButton() {
 	return <Button onClick={logIn}>Login</Button>;

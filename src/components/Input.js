@@ -3,10 +3,10 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
-import Control from "./Control";
-import styles from "./Control.module.css";
+import Block from "./Block";
+import styles from "./Block.module.css";
 
-export default function SearchInput({ query = "search", placeholder = "Search" }) {
+export default function Input({ query = "search", placeholder = "Search" }) {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const { replace } = useRouter();
@@ -14,7 +14,7 @@ export default function SearchInput({ query = "search", placeholder = "Search" }
 	// Current param from URL
 	const paramValue = searchParams.get(query) || "";
 
-	// Local state for controlled input
+	// Local state for Blockled input
 	const [value, setValue] = useState(paramValue);
 
 	// Keep local state in sync if URL changes from outside
@@ -33,7 +33,7 @@ export default function SearchInput({ query = "search", placeholder = "Search" }
 	}, 500); // longer debounce = less stutter
 
 	return (
-		<Control
+		<Block
 			as="input"
 			type="text"
 			value={value}

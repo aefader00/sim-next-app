@@ -4,7 +4,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Cascader, Input } from "antd";
 
-import { ContentForm, FormLabel, FormInput } from "../../ContentForm";
+import { FormWrapper, FormLabel, FormInput } from "../../Form";
 import PresentationsField from "./PresentationsField";
 import LocationSelect from "./LocationSelect";
 import UsersTransfer from "../../UsersTransfer";
@@ -27,7 +27,7 @@ export default function GroupForm({ onSubmit, group, thursday, users, thursdays 
 	const [presentations, setPresentations] = useState(defaultPresentations);
 
 	return (
-		<ContentForm
+		<FormWrapper
 			action={(formData) => {
 				const data = {
 					name: formData.get("name"),
@@ -62,6 +62,6 @@ export default function GroupForm({ onSubmit, group, thursday, users, thursdays 
 
 			<FormLabel>Presentations</FormLabel>
 			<PresentationsField users={users} defaultPresentations={defaultPresentations} onChange={setPresentations} />
-		</ContentForm>
+		</FormWrapper>
 	);
 }

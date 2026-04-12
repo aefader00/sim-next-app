@@ -13,10 +13,10 @@ model User {
   email         String     @unique
   accounts      Account[]
   sessions      Session[]
-  name          String
-  image         String
-  pronouns      String
-  link          String
+  name          String?
+  image         String?
+  pronouns      String?
+  link          String?
   username      String     @unique
   admin         Boolean    @default(false)
   presentations Work[]
