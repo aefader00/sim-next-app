@@ -1,9 +1,6 @@
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('STUDENT', 'STAFF', 'ADMIN');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -13,7 +10,7 @@ CREATE TABLE "User" (
     "about" TEXT,
     "pronouns" TEXT,
     "link" TEXT,
-    "role" "Role" NOT NULL DEFAULT 'STUDENT',
+    "admin" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
