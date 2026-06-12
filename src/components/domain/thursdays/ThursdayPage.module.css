@@ -12,28 +12,6 @@
 	}
 }
 
-.ThursdayInfo {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.SemesterSubtitle {
-	font-size: 1.1rem;
-	font-weight: 700;
-	color: #1a120b;
-}
-
-.DateBadge {
-	display: inline-block;
-	font-size: 0.8rem;
-	font-weight: 700;
-	padding: 0.3rem 0.8rem;
-	background: var(--secondary-bg);
-	border-radius: 4px;
-	color: #3d1f05;
-}
-
 .NoProductions {
 	font-style: italic;
 	color: #666;

@@ -13,6 +13,21 @@ interface ThursdaysProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+function formatSemesterCode(name?: string | null) {
+  if (!name) return "";
+
+  const code = name.match(/^(SP|FA)\d{2}$/i);
+  if (code) return name.toUpperCase();
+
+  const namedSemester = name.match(/^(Spring|Fall)\s+(\d{4})$/i);
+  if (namedSemester) {
+    const term = namedSemester[1].toLowerCase() === "spring" ? "SP" : "FA";
+    return `${term}${namedSemester[2].slice(-2)}`;
+  }
+
+  return name;
+}
+
 async function ThursdaysList({
   filters,
   isAdmin,
@@ -54,20 +69,26 @@ export default async function Thursdays({ searchParams }: ThursdaysProps) {
     : filters.semester;
   const semesterIdFilter = semesterIdParam || semesterParam;
   const defaultSemesterId = semesters[0]?.id || null;
+  const selectedSemesterId = semesterIdFilter || defaultSemesterId;
+  const selectedSemester = semesters.find((semester: any) =>
+    semester.id === selectedSemesterId || semester.name === selectedSemesterId
+  );
+  const semesterCode = formatSemesterCode(selectedSemester?.name || selectedSemesterId);
+  const pageTitle = [semesterCode, "Thursdays"].filter(Boolean).join(", ");
 
   return (
     <>
       <Split
-        start={<h2>Thursdays</h2>}
+        start={<h2>{pageTitle}</h2>}
         end={
           <>
             <FilterInput query={"thursdays"} />
             <FilterSelect
               filter={"semesterId"}
               options={semesters}
-              defaultValue={semesterIdFilter || defaultSemesterId}
+              defaultValue={selectedSemesterId}
             />
-            {isAdmin && <Button href="/thursdays/add">Add Day</Button>}
+            {isAdmin && <Button href="/thursdays/add">Add</Button>}
           </>
         }
       />

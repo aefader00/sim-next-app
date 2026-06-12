@@ -58,7 +58,7 @@ export default function SemesterUsersTable({ users = [] }: SemesterUsersTablePro
 				}
 				return (
 					<div className={styles.section}>
-						<span className={styles.sectionLabel}>
+						<span className="section-label">
 							Productions: {productions.length}
 						</span>
 						<div className={styles.cardsGrid}>
@@ -96,7 +96,7 @@ export default function SemesterUsersTable({ users = [] }: SemesterUsersTablePro
 					<>
 						{hasPreMid && (
 							<div className={styles.section}>
-								<span className={styles.sectionLabel}>Pre-Mid</span>
+								<span className="section-label">Pre-Mid</span>
 								<div className={styles.cardsGrid}>
 									{user.presentationsBeforeMid.map((p) => (
 										<ItemCard
@@ -111,7 +111,7 @@ export default function SemesterUsersTable({ users = [] }: SemesterUsersTablePro
 						)}
 						{hasPostMid && (
 							<div className={styles.section}>
-								<span className={styles.sectionLabel}>Post-Mid</span>
+								<span className="section-label">Post-Mid</span>
 								<div className={styles.cardsGrid}>
 									{user.presentationsAfterMid.map((p) => (
 										<ItemCard

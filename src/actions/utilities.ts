@@ -64,7 +64,7 @@ export async function generateSemesterThursdays(dateRange: [string, string] | (s
 
 // Determine the name of a Thursday based on its position in the semester
 export function getSemesterThursdayName(index: number) {
-	return index % 2 === 0 ? "Big Production Day" : "Small Production Day";
+	return index % 2 === 0 ? "Big Production" : "Small Production";
 }
 
 // Format a date into a YYYY-MM-DD string key
@@ -74,7 +74,7 @@ export function getDateKey(date: Date | string) {
 
 // Get default production configuration for a given production day type
 export function getDefaultProductionsForThursday(name: string) {
-	if (name === "Big Production Day") {
+	if (name === "Big Production" || name === "Big Production Day") {
 		return { create: [{ name: "Big Production", location: "Pozen Center" }] };
 	}
 	return undefined;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Space, Typography } from "antd";
 import {
@@ -10,7 +10,6 @@ import {
   Card,
   Button,
   Alert,
-  Checkbox,
 } from "@/components/ui/AntD";
 import { transformUserFromAPI } from "@/components/forms/user/user.transformers";
 import ImageUpload from "@/components/ui/ImageUpload";
@@ -20,6 +19,84 @@ import { UserInput } from "@/components/forms/schemas";
 import styles from "@/components/forms/user/UserForm.module.css";
 
 const { Text, Title } = Typography;
+
+function getSemesterNameOptions(currentValues: string[] = []) {
+  const options = Array.from({ length: 100 }, (_, year) => {
+    const shortYear = String(year).padStart(2, "0");
+    return [
+      { value: `SP${shortYear}`, label: `SP${shortYear}` },
+      { value: `FA${shortYear}`, label: `FA${shortYear}` },
+    ];
+  }).flat();
+
+  const extraOptions = currentValues
+    .filter((value) => value && !options.some((option) => option.value === value))
+    .map((value) => ({ value, label: value }));
+
+  return [...extraOptions, ...options];
+}
+
+function formatSemesterCode(name?: string | null) {
+  if (!name) return "";
+
+  const code = name.match(/^(SP|FA)\d{2}$/i);
+  if (code) return name.toUpperCase();
+
+  const namedSemester = name.match(/^(Spring|Fall)\s+(\d{4})$/i);
+  if (namedSemester) {
+    const term = namedSemester[1].toLowerCase() === "spring" ? "SP" : "FA";
+    return `${term}${namedSemester[2].slice(-2)}`;
+  }
+
+  return name;
+}
+
+function getCurrentSemesterYearValue() {
+  return `SP${String(new Date().getFullYear()).slice(-2)}`;
+}
+
+function getSemesterNameIndex(value?: string) {
+  const match = value?.match(/^(SP|FA)(\d{2})$/i);
+  if (!match) return 0;
+
+  const termOffset = match[1].toUpperCase() === "FA" ? 1 : 0;
+  return Number(match[2]) * 2 + termOffset;
+}
+
+function getDefaultSemesterCode(semesters: any[]) {
+  return formatSemesterCode(semesters[0]?.name) || getCurrentSemesterYearValue();
+}
+
+function getRangeEndpoints(selectedCodes: string[] = []) {
+  const selectedIndexes = selectedCodes
+    .map((code) => getSemesterNameIndex(code))
+    .filter((index) => index >= 0);
+
+  if (selectedIndexes.length === 0) {
+    return { startCode: undefined, endCode: undefined };
+  }
+
+  const options = getSemesterNameOptions();
+  return {
+    startCode: options[Math.min(...selectedIndexes)]?.value,
+    endCode: options[Math.max(...selectedIndexes)]?.value,
+  };
+}
+
+function getSemesterCodesInRange(startCode: string | undefined, endCode: string | undefined) {
+  if (!startCode && !endCode) return [];
+  if (!startCode) return [endCode!];
+  if (!endCode) return [startCode];
+
+  const startIndex = getSemesterNameIndex(startCode);
+  const endIndex = getSemesterNameIndex(endCode);
+  const firstIndex = Math.min(startIndex, endIndex);
+  const lastIndex = Math.max(startIndex, endIndex);
+
+  return getSemesterNameOptions()
+    .slice(firstIndex, lastIndex + 1)
+    .map((option) => option.value);
+}
 
 interface UserFormProps {
   onSubmit: (data: UserInput) => Promise<any>;
@@ -36,6 +113,13 @@ export default function UserForm({
   isCurrentUserAdmin = false,
   allSemesters = [],
 }: UserFormProps) {
+  const semesterStartSelectRef = useRef<{
+    scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
+  } | null>(null);
+  const semesterEndSelectRef = useRef<{
+    scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
+  } | null>(null);
+  const defaultSemesterCode = getDefaultSemesterCode(allSemesters);
   const initialValues = transformUserFromAPI(user) || {
     name: "",
     pronouns: "",
@@ -45,6 +129,7 @@ export default function UserForm({
     about: "",
     role: "STUDENT",
     semesterIds: allSemesters.length > 0 ? [allSemesters[0].id] : [],
+    semesterCodes: defaultSemesterCode ? [defaultSemesterCode] : [],
   };
 
   const {
@@ -56,6 +141,7 @@ export default function UserForm({
   });
 
   const [error, setError] = useState<string | null>(null);
+  const semesterOptions = getSemesterNameOptions(initialValues.semesterCodes);
 
   const handleFormSubmit = async (data: UserInput) => {
     await handleFormAction(
@@ -103,39 +189,87 @@ export default function UserForm({
             </Text>
           </div>
 
-          {isCurrentUserAdmin && allSemesters.length > 0 && (
+          {isCurrentUserAdmin && (
             <div>
               <Text strong style={{ display: "block", marginBottom: "8px" }}>
                 Semesters Enrolled
               </Text>
-              <div style={{ maxHeight: "200px", overflowY: "auto", padding: "12px" }}>
-                <Controller
-                  control={control}
-                  name="semesterIds"
-                  render={({ field }) => (
-                    <Checkbox.Group
-                      {...field}
-                      style={{
-                        width: "100%",
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-                        gap: "8px",
-                      }}
-                    >
-                      {allSemesters.map((semester) => (
-                        <Checkbox key={semester.id} value={semester.id}>
-                          {semester.name}
-                        </Checkbox>
-                      ))}
-                    </Checkbox.Group>
-                  )}
-                />
-              </div>
+              <Controller
+                control={control}
+                name="semesterCodes"
+                render={({ field }) => {
+                  const { startCode, endCode } = getRangeEndpoints(field.value);
+
+                  return (
+                    <div className={styles.semesterRange}>
+                      <Select
+                        ref={(instance) => {
+                          semesterStartSelectRef.current = instance;
+                          field.ref(instance);
+                        }}
+                        value={startCode}
+                        placeholder="From"
+                        showSearch
+                        allowClear
+                        options={semesterOptions}
+                        onOpenChange={(open) => {
+                          if (!open) return;
+
+                          window.setTimeout(() => {
+                            semesterStartSelectRef.current?.scrollTo?.({
+                              index: getSemesterNameIndex(startCode || defaultSemesterCode),
+                              align: "top",
+                            });
+                          }, 0);
+                        }}
+                        onChange={(value) => {
+                          field.onChange(
+                            getSemesterCodesInRange(
+                              value as string | undefined,
+                              endCode,
+                            ),
+                          );
+                        }}
+                      />
+                      <span className={styles.semesterRangeSeparator}>to</span>
+                      <Select
+                        ref={(instance) => {
+                          semesterEndSelectRef.current = instance;
+                          field.ref(instance);
+                        }}
+                        value={endCode}
+                        placeholder="To"
+                        showSearch
+                        allowClear
+                        options={semesterOptions}
+                        onOpenChange={(open) => {
+                          if (!open) return;
+
+                          window.setTimeout(() => {
+                            semesterEndSelectRef.current?.scrollTo?.({
+                              index: getSemesterNameIndex(endCode || startCode || defaultSemesterCode),
+                              align: "top",
+                            });
+                          }, 0);
+                        }}
+                        onChange={(value) => {
+                          field.onChange(
+                            getSemesterCodesInRange(
+                              startCode,
+                              value as string | undefined,
+                            ),
+                          );
+                        }}
+                      />
+                    </div>
+                  );
+                }}
+              />
             </div>
           )}
 
           {isCurrentUserAdmin && (
-            <div>
+            <div className={styles.halfField}>
               <Text strong style={{ display: "block", marginBottom: "8px" }}>Role</Text>
               <Controller
                 control={control}

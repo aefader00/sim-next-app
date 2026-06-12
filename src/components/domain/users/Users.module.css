@@ -8,3 +8,43 @@
 .resultsWrapper {
 	padding: var(--section-padding);
 }
+
+.printTitle {
+	display: none;
+}
+
+@media print {
+	@page {
+		size: letter landscape;
+		margin: 0.2in;
+	}
+
+	:global(nav),
+	.screenToolbar {
+		display: none !important;
+	}
+
+	.resultsWrapper {
+		padding: 0;
+	}
+
+	.printTitle {
+		display: block;
+		margin: 0 0 0.08in;
+		color: #111;
+		font-size: 11pt;
+		font-weight: 700;
+		line-height: 1.1;
+	}
+
+	.UsersGrid {
+		grid-template-columns: repeat(8, minmax(0, 1fr));
+		gap: 0.08in;
+		justify-content: stretch;
+	}
+
+	.UsersGrid > * {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+}

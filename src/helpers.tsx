@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { ActionResult } from "@/actions/utilities";
+import type { ActionResult } from "@/actions/utilities";
 
 // Retrieve items from an array based on a list of selected keys
 export function getArrayfromSelectedKeys<T extends { key: string | number }>(array: T[] = [], selectedKeys: (string | number)[] = []): T[] {
@@ -40,6 +40,14 @@ export function normalizeFaceImagePath(imagePath?: string | null): string {
 	}
 
 	return imagePath;
+}
+
+// Normalize legacy seeded day names for display and future saves.
+export function normalizeThursdayName(name?: string | null): string {
+	if (!name) return "";
+	if (name === "Big Production Day") return "Big Production";
+	if (name === "Small Production Day") return "Small Production";
+	return name;
 }
 
 // Common wrapper for form submissions to handle Next.js redirects and standardized action results

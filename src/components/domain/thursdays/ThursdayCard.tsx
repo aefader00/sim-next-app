@@ -1,11 +1,8 @@
-import Link from "next/link";
 import styles from "@/components/domain/thursdays/ThursdayCard.module.css";
 import { Button } from "@/components/ui/AntD";
-import Split from "@/components/ui/Split";
-import ProductionCard from "@/components/domain/thursdays/ProductionCard";
 import ProductionsCollapse from "@/components/domain/thursdays/ProductionsCollapse";
 import { auth } from "@/authentication";
-import Block from "@/components/ui/Block";
+import { normalizeThursdayName } from "@/helpers";
 
 import { Prisma } from "@prisma/client";
 
@@ -29,6 +26,26 @@ interface ThursdayCardProps {
   isAdmin?: boolean;
 }
 
+function formatOrdinal(value: number) {
+  const remainder = value % 100;
+  if (remainder >= 11 && remainder <= 13) return `${value}th`;
+
+  switch (value % 10) {
+    case 1:
+      return `${value}st`;
+    case 2:
+      return `${value}nd`;
+    case 3:
+      return `${value}rd`;
+    default:
+      return `${value}th`;
+  }
+}
+
+function formatSummaryLabel(label: string, index: number, count: number) {
+  return count > 1 ? `${formatOrdinal(index + 1)} ${label}` : label;
+}
+
 export default async function ThursdayCard({
   thursday,
   isAdmin: initialIsAdmin,
@@ -38,52 +55,65 @@ export default async function ThursdayCard({
     const session = await auth();
     isAdmin = session?.user?.role === "ADMIN";
   }
+  const formattedDate = new Date(thursday.date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const thursdayName = normalizeThursdayName(thursday.name);
 
   return (
-    <Block as="div" className={styles.ThursdayCard} pressable={false}>
-      <Split
-        className={styles.headerSplit}
-        start={
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <h2 className={styles.Title}>
-              <Link href={`/thursdays/${thursday.id}`}>
-                <b>{thursday.name}</b>
-              </Link>
-            </h2>
-            <span className={styles.DateBadge}>
-              {new Date(thursday.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            </span>
-          </div>
-        }
-        end={
-          isAdmin && (
-            <Button href={`/thursdays/${thursday.id}/edit`}>
-              Edit Thursday
-            </Button>
-          )
-        }
-      />
+    <ProductionsCollapse
+      productions={[{
+        id: thursday.id,
+        name: thursdayName,
+        href: `/thursdays/${thursday.id}`,
+        date: formattedDate,
+        extra: isAdmin ? (
+          <Button href={`/thursdays/${thursday.id}/edit`}>
+            Edit
+          </Button>
+        ) : undefined,
+        content: (
+          <>
+            {thursday.productions.length > 0 ? (
+              <div className={styles.DaySummary}>
+                {thursday.productions.map((production: any, productionIndex: number) => (
+                  <div key={production.id} className={styles.DaySummaryRow}>
+                    <div className={styles.DaySummaryColumn}>
+                      <h3 className={styles.DaySummaryItem}>
+                        <span className="section-label">
+                          {formatSummaryLabel("Production", productionIndex, thursday.productions.length)}:
+                        </span>
+                        <span>{production.name}</span>
+                      </h3>
+                    </div>
 
-      <div className={styles.productionsWrapper}>
-        {thursday.productions.length > 0 ? (
-          <ProductionsCollapse
-            productions={thursday.productions.map((production: any) => ({
-              id: production.id,
-              name: production.name,
-              location: production.location,
-              content: (
-                <ProductionCard
-                  thursday={thursday}
-                  production={production}
-                  isAdmin={isAdmin}
-                />
-              ),
-            }))}
-          />
-        ) : (
-          <div>There are no productions scheduled on this Thursday yet.</div>
-        )}
-      </div>
-    </Block>
+                    <div className={styles.DaySummaryColumn}>
+                      {production.presentations.length > 0 ? (
+                        production.presentations.map((presentation: any, presentationIndex: number) => (
+                          <h3 key={presentation.id} className={styles.DaySummaryItem}>
+                            <span className="section-label">
+                              {formatSummaryLabel("Presentation", presentationIndex, production.presentations.length)}:
+                            </span>
+                            <span>{presentation.name}</span>
+                          </h3>
+                        ))
+                      ) : (
+                        <span className={styles.EmptyLabel}>No current presentations</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <span className={styles.EmptyLabel}>
+                No current productions
+              </span>
+            )}
+          </>
+        ),
+      }]}
+    />
   );
 }

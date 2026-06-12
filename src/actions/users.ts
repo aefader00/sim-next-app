@@ -5,9 +5,102 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/database";
 
 import { ensureAdmin, getAuthSession } from "@/actions/auth";
-import { getAllSemesters as getAllSemestersUtil, action } from "@/actions/utilities";
+import {
+	getAllSemesters as getAllSemestersUtil,
+	generateSemesterThursdays,
+	getDefaultProductionsForThursday,
+	getSemesterThursdayName,
+	action,
+} from "@/actions/utilities";
 import { UserSchema, UserInput, FilterSchema, FilterInputValues } from "@/components/forms/schemas";
 import { Prisma } from "@prisma/client";
+
+function normalizeSemesterCode(value?: string | null) {
+	if (!value) return null;
+
+	const code = value.match(/^(SP|FA)\d{2}$/i);
+	if (code) return value.toUpperCase();
+
+	const namedSemester = value.match(/^(Spring|Fall)\s+(\d{4})$/i);
+	if (namedSemester) {
+		const term = namedSemester[1].toLowerCase() === "spring" ? "SP" : "FA";
+		return `${term}${namedSemester[2].slice(-2)}`;
+	}
+
+	return null;
+}
+
+function isAllFilter(value?: string) {
+	return value === "All" || value === "__all__";
+}
+
+function getSemesterYear(code: string) {
+	return 2000 + Number(code.slice(2));
+}
+
+function getSemesterLegacyName(code: string) {
+	const year = getSemesterYear(code);
+	return code.startsWith("SP") ? `Spring ${year}` : `Fall ${year}`;
+}
+
+function getDefaultSemesterDateRange(code: string): [Date, Date] {
+	const year = getSemesterYear(code);
+
+	if (code.startsWith("SP")) {
+		return [new Date(year, 0, 15), new Date(year, 4, 15)];
+	}
+
+	return [new Date(year, 8, 1), new Date(year, 11, 20)];
+}
+
+async function findOrCreateSemesterForCode(tx: Prisma.TransactionClient, code: string) {
+	const existingSemester = await tx.semester.findFirst({
+		where: {
+			name: {
+				in: [code, getSemesterLegacyName(code)],
+			},
+		},
+		select: { id: true },
+	});
+
+	if (existingSemester) return existingSemester;
+
+	const dates = await generateSemesterThursdays(getDefaultSemesterDateRange(code));
+	const thursdays = dates.map((day, index) => {
+		const name = getSemesterThursdayName(index);
+		const defaultProductions = getDefaultProductionsForThursday(name);
+
+		return {
+			name,
+			date: day,
+			...(defaultProductions ? { productions: defaultProductions } : {}),
+		};
+	});
+
+	return await tx.semester.create({
+		data: {
+			name: code,
+			thursdays: {
+				create: thursdays,
+			},
+		},
+		select: { id: true },
+	});
+}
+
+async function getSemesterIdsForUserInput(
+	tx: Prisma.TransactionClient,
+	semesterCodes: string[] | undefined,
+	semesterIds: string[] | undefined,
+) {
+	if (semesterCodes) {
+		const codes = [...new Set(semesterCodes.map(normalizeSemesterCode).filter(Boolean) as string[])];
+		const semesters = await Promise.all(codes.map((code) => findOrCreateSemesterForCode(tx, code)));
+		return semesters.map((semester) => semester.id);
+	}
+
+	return semesterIds ?? [];
+}
 
 export async function getAllSemesters() {
 	return await getAllSemestersUtil();
@@ -83,9 +176,9 @@ export async function getFilteredUsers(rawFilters: any) {
 
 		let semesterQuery: Prisma.UserWhereInput = {};
 
-		if (filters.semesterId && filters.semesterId !== "All") {
+		if (filters.semesterId && !isAllFilter(filters.semesterId)) {
 			semesterQuery = { semesters: { some: { id: filters.semesterId } } };
-		} else if (filters.semester && filters.semester !== "All") {
+		} else if (filters.semester && !isAllFilter(filters.semester)) {
 			// Fallback for legacy name-based filtering
 			semesterQuery = { semesters: { some: { name: { contains: filters.semester } } } };
 		} else if (!filters.semesterId && !filters.semester) {
@@ -123,7 +216,8 @@ export async function editUser(formData: UserInput) {
 			throw new Error(validation.error.issues[0].message);
 		}
 		const validatedFields = validation.data;
-		const { id, name, about, image, email, link, pronouns, role, semesterIds } = validatedFields;
+		const { id, name, about, image, email, link, pronouns, role, semesterIds, semesterCodes } = validatedFields;
+		const hasSemesterCodes = Array.isArray((formData as any).semesterCodes);
 		
 		const { user: currentUser, isAdmin } = await getAuthSession();
 		
@@ -132,24 +226,31 @@ export async function editUser(formData: UserInput) {
 			throw new Error("Unauthorized: You can only edit your own profile.");
 		}
 
-		// Only admins can change admin status or semesters
-		const data: Prisma.UserUpdateInput = { name, about, image, link, pronouns, email };
-		if (isAdmin) {
-			data.role = role;
-			if (semesterIds) {
-				data.semesters = {
-					set: semesterIds.map(id => ({ id }))
-				};
-			}
-		}
-
 		try {
-			const updatedUser = await prisma.user.update({
-				where: { id: id! },
-				data,
+			const updatedUser = await prisma.$transaction(async (tx) => {
+				// Only admins can change admin status or semesters
+				const data: Prisma.UserUpdateInput = { name, about, image, link, pronouns, email };
+				if (isAdmin) {
+					const resolvedSemesterIds = await getSemesterIdsForUserInput(
+						tx,
+						hasSemesterCodes ? semesterCodes : undefined,
+						semesterIds,
+					);
+
+					data.role = role;
+					data.semesters = {
+						set: resolvedSemesterIds.map((id) => ({ id })),
+					};
+				}
+
+				return await tx.user.update({
+					where: { id: id! },
+					data,
+				});
 			});
 			revalidatePath(`/users/${updatedUser.id}`);
 			revalidatePath("/admin");
+			revalidatePath("/thursdays");
 			return updatedUser;
 		} catch (error: any) {
 			if (error instanceof Error && (error as any).code === "P2002") {
@@ -169,18 +270,28 @@ export async function addUser(formData: UserInput) {
 			throw new Error(validation.error.issues[0].message);
 		}
 		const validatedFields = validation.data;
-		const { semesterIds, ...userData } = validatedFields;
+		const { semesterIds, semesterCodes, ...userData } = validatedFields;
+		const hasSemesterCodes = Array.isArray((formData as any).semesterCodes);
 
 		try {
-			const newUser = await prisma.user.create({
-				data: {
-					...userData,
-					semesters: {
-						connect: semesterIds?.map(id => ({ id })) || []
-					}
-				},
+			const newUser = await prisma.$transaction(async (tx) => {
+				const resolvedSemesterIds = await getSemesterIdsForUserInput(
+					tx,
+					hasSemesterCodes ? semesterCodes : undefined,
+					semesterIds,
+				);
+
+				return await tx.user.create({
+					data: {
+						...userData,
+						semesters: {
+							connect: resolvedSemesterIds.map((id) => ({ id })),
+						},
+					},
+				});
 			});
 			revalidatePath("/admin");
+			revalidatePath("/thursdays");
 			return newUser;
 		} catch (error: any) {
 			if (error instanceof Error && (error as any).code === "P2002") {

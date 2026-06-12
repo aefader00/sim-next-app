@@ -10,6 +10,7 @@ export const UserSchema = z.object({
 	about: z.string().optional(),
 	role: z.enum(["STUDENT", "STAFF", "ADMIN"]).default("STUDENT"),
 	semesterIds: z.array(z.string()).optional().default([]),
+	semesterCodes: z.array(z.string()).optional().default([]),
 });
 
 export type UserInput = z.infer<typeof UserSchema>;

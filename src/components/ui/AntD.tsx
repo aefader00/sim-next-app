@@ -31,6 +31,7 @@ import {
 	CheckboxProps,
 } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
+import { forwardRef } from "react";
 import Block from "@/components/ui/Block";
 import clsx from "clsx";
 
@@ -71,11 +72,11 @@ export function TextArea(props: any) {
 	);
 }
 
-export function Select(props: SelectProps) {
+export const Select = forwardRef<any, SelectProps>(function Select(props, ref) {
 	return (
-		<Block as={AntSelect} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
+		<Block ref={ref} as={AntSelect} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
 	);
-}
+});
 
 export function DatePicker(props: DatePickerProps) {
 	return (

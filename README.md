@@ -124,8 +124,8 @@ pg_dump -U sim sim > backup_$(date +%Y%m%d).sql
 1. **Create a Semester**: Set the name (e.g., "FA26") and the date range.
 2. **Automated Generation**: The system automatically calculates every Thursday in that range.
 3. **Production Days**:
-   - **Big Production Day**: Defaults to a "Pozen Center" location.
-   - **Small Production Day**: Standard classroom presentations.
+   - **Big Production**: Defaults to a "Pozen Center" location.
+   - **Small Production**: Standard classroom presentations.
 4. **Student Progress**: The Admin Dashboard automatically tallies "Works Made" and "Groups Produced" for every student in a given semester, simplifying end-of-term grading.
 
 ---

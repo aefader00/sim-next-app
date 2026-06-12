@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { normalizeThursdayName } from "@/helpers";
 
 /**
  * Transform form data (from React Hook Form) into API payload
@@ -38,7 +39,7 @@ export function transformThursdayFromAPI(apiData: any) {
   }
 
   return {
-    name: apiData.name,
+    name: normalizeThursdayName(apiData.name),
     date: apiData.date ? dayjs(apiData.date) : null,
     semesterId: apiData.semester_id || null,
     productions: (apiData.productions || []).map((p: any) => ({

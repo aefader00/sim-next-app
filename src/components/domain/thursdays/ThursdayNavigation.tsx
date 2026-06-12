@@ -11,6 +11,7 @@ export default function ThursdayNavigation({ previous, next }: ThursdayNavigatio
 	return (
 		<div className={styles.ThursdayNavigation}>
 			<Split
+				className={styles.NavigationSplit}
 				start={
 					previous && (
 						<Button

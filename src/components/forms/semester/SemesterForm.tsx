@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Space, Typography } from "antd";
 import {
-  Input,
   RangePicker,
   Select,
   Card,
@@ -19,8 +18,55 @@ import DeleteButton from "@/components/ui/DeleteButton";
 import { handleFormAction } from "@/helpers";
 import { BasicUser, SemesterInput } from "@/components/forms/schemas";
 import { ActionResult } from "@/actions/utilities";
+import styles from "@/components/forms/semester/SemesterForm.module.css";
 
 const { Text, Title } = Typography;
+
+function getSemesterNameOptions(currentValue?: string) {
+  const options = Array.from({ length: 100 }, (_, year) => {
+    const shortYear = String(year).padStart(2, "0");
+    return [
+      { value: `SP${shortYear}`, label: `SP${shortYear}` },
+      { value: `FA${shortYear}`, label: `FA${shortYear}` },
+    ];
+  }).flat();
+
+  if (currentValue && !options.some((option) => option.value === currentValue)) {
+    return [{ value: currentValue, label: currentValue }, ...options];
+  }
+
+  return options;
+}
+
+function getCurrentSemesterYearValue() {
+  return `SP${String(new Date().getFullYear()).slice(-2)}`;
+}
+
+function getSemesterNameIndex(value?: string) {
+  const match = value?.match(/^(SP|FA)(\d{2})$/i);
+  if (!match) return 0;
+
+  const termOffset = match[1].toUpperCase() === "FA" ? 1 : 0;
+  return Number(match[2]) * 2 + termOffset;
+}
+
+function getSelectableUsers(...userGroups: Array<BasicUser[] | undefined>) {
+  const usersById = new Map<string, BasicUser>();
+
+  for (const group of userGroups) {
+    for (const user of group ?? []) {
+      if (!user?.id) continue;
+      usersById.set(user.id, {
+        ...user,
+        name: user.name || "Unnamed User",
+      });
+    }
+  }
+
+  return [...usersById.values()].sort((a, b) =>
+    (a.name ?? "").localeCompare(b.name ?? ""),
+  );
+}
 
 interface SemesterFormValues extends Omit<SemesterInput, "dates" | "users"> {
   dates: [any, any] | null;
@@ -44,6 +90,9 @@ export default function SemesterForm({
   users,
   isCurrentUserAdmin = false,
 }: SemesterFormProps) {
+  const semesterSelectRef = useRef<{
+    scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
+  } | null>(null);
   const initialValues = transformSemesterFromAPI(
     semester,
     usersFromCurrentSemester,
@@ -58,6 +107,11 @@ export default function SemesterForm({
   });
 
   const [error, setError] = useState<string | null>(null);
+  const selectableUsers = getSelectableUsers(
+    users,
+    semester?.users,
+    usersFromCurrentSemester,
+  );
 
 
   const handleFormSubmit = async (data: SemesterFormValues) => {
@@ -81,46 +135,65 @@ export default function SemesterForm({
           />
         )}
         <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-          <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>Semester Name</Text>
-            <Controller
-              control={control}
-              name="name"
-              rules={{ required: "Semester name is required" }}
-              render={({ field, fieldState }) => (
-                <>
-                  <Input
-                    {...field}
-                    placeholder="e.g. Fall 2024"
-                    status={fieldState.error ? "error" : ""}
-                  />
-                  {fieldState.error && (
-                    <Text type="danger">{fieldState.error.message}</Text>
-                  )}
-                </>
-              )}
-            />
-          </div>
+          <div className={styles.formGrid}>
+            <div>
+              <Text strong style={{ display: "block", marginBottom: "8px" }}>Semester Name</Text>
+              <Controller
+                control={control}
+                name="name"
+                rules={{ required: "Semester name is required" }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Select
+                      {...field}
+                      ref={(instance) => {
+                        semesterSelectRef.current = instance;
+                        field.ref(instance);
+                      }}
+                      value={field.value || undefined}
+                      showSearch
+                      placeholder="e.g. FA26"
+                      status={fieldState.error ? "error" : ""}
+                      onOpenChange={(open) => {
+                        if (!open) return;
 
-          <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>Select Date Range</Text>
-            <Controller
-              control={control}
-              name="dates"
-              rules={{ required: "Date range is required" }}
-              render={({ field, fieldState }) => (
-                <div style={{ display: "block" }}>
-                  <RangePicker
-                    {...field}
-                    style={{ width: "100%" }}
-                    status={fieldState.error ? "error" : ""}
-                  />
-                  {fieldState.error && (
-                    <Text type="danger">{fieldState.error.message}</Text>
-                  )}
-                </div>
-              )}
-            />
+                        window.setTimeout(() => {
+                          semesterSelectRef.current?.scrollTo?.({
+                            index: getSemesterNameIndex(field.value || getCurrentSemesterYearValue()),
+                            align: "top",
+                          });
+                        }, 0);
+                      }}
+                      options={getSemesterNameOptions(field.value)}
+                    />
+                    {fieldState.error && (
+                      <Text type="danger">{fieldState.error.message}</Text>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+
+            <div>
+              <Text strong style={{ display: "block", marginBottom: "8px" }}>Select Date Range</Text>
+              <Controller
+                control={control}
+                name="dates"
+                rules={{ required: "Date range is required" }}
+                render={({ field, fieldState }) => (
+                  <div style={{ display: "block" }}>
+                    <RangePicker
+                      {...field}
+                      style={{ width: "100%" }}
+                      status={fieldState.error ? "error" : ""}
+                    />
+                    {fieldState.error && (
+                      <Text type="danger">{fieldState.error.message}</Text>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
           </div>
 
           <div>
@@ -134,7 +207,7 @@ export default function SemesterForm({
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <button
                         type="button"
-                        onClick={() => field.onChange(users.map((u) => u.id))}
+                        onClick={() => field.onChange(selectableUsers.map((u) => u.id))}
                         style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#15803d", fontWeight: 600 }}
                       >
                         Select all
@@ -160,9 +233,7 @@ export default function SemesterForm({
                   filterOption={(input, option) =>
                     (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
                   }
-                  options={[...users]
-                    .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
-                    .map((u) => ({ value: u.id, label: u.name ?? "Unnamed User" }))}
+                  options={selectableUsers.map((u) => ({ value: u.id, label: u.name ?? "Unnamed User" }))}
                   optionRender={(option) => {
                     const isSelected = (field.value ?? []).includes(option.value as string);
                     return (

@@ -49,3 +49,38 @@
   font-size: 0.85rem;
   word-break: break-word;
 }
+
+@media print {
+  .UserCard {
+    border: 1px solid #222 !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+    color: #111;
+    transform: none !important;
+  }
+
+  .cardInner {
+    border-radius: 3px;
+  }
+
+  .imageSection {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .nameSection {
+    min-height: 0.23in;
+    padding: 0.035in 0.045in;
+  }
+
+  .name {
+    font-size: 6.5pt;
+    line-height: 1.1;
+  }
+
+  .roleLabel {
+    border-radius: 0 0 0 4px;
+    font-size: 4.5pt;
+    padding: 0.02in 0.035in;
+  }
+}

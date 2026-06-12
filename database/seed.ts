@@ -35,12 +35,12 @@ function generateSemesterThursdays(startDateStr: string, endDateStr: string) {
 
 // Alternate between Big and Small production days for each Thursday
 function getSemesterThursdayName(index: number) {
-  return index % 2 === 0 ? "Big Production Day" : "Small Production Day";
+  return index % 2 === 0 ? "Big Production" : "Small Production";
 }
 
 // Create default productions for specific types of production days
 function getDefaultProductionsForThursday(name: string) {
-  if (name === "Big Production Day") {
+  if (name === "Big Production" || name === "Big Production Day") {
     return { create: [{ name: "Big Production", location: "Pozen Center" }] };
   }
   return undefined;

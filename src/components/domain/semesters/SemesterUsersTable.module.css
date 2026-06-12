@@ -8,14 +8,6 @@
 	margin-top: 0.8rem;
 }
 
-.sectionLabel {
-	font-size: 0.72rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	color: #888;
-}
-
 .emptyLabel {
 	font-size: 0.82rem;
 	color: #aaa;

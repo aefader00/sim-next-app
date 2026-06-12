@@ -25,7 +25,7 @@ export function FilterInput({ query = "search", placeholder = "Search", ...props
 	);
 }
 
-const ALL_SENTINEL = "__all__";
+const ALL_SENTINEL = "All";
 
 interface FilterSelectProps extends Omit<SelectProps, "value" | "onChange" | "options" | "loading"> {
 	filter: string;
@@ -57,7 +57,7 @@ export function FilterSelect({
 			showSearch
 			placeholder={placeholder}
 			value={value !== null ? value : defaultValue}
-			onChange={(val) => handleChange(val === ALL_SENTINEL ? null : val)}
+			onChange={(val) => handleChange(val as string)}
 			loading={isPending}
 			options={[
 				...allOption,

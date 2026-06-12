@@ -1,9 +1,31 @@
 .Presentation {
   display: flex;
-  margin: 0.25rem 0;
+  margin: 0.75rem 0;
   width: 100%;
   text-decoration: none !important;
   color: inherit !important;
+}
+
+.PresentationRow {
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.PresentationName {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.PresentationDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
 .PresentationInner {
@@ -25,6 +47,12 @@
   gap: 0 0.25rem;
 }
 
+.PresenterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .GreyButton {
   background: var(--neo-bg-white) !important;
   color: #222 !important;
@@ -32,4 +60,11 @@
 
 .Presentation a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .PresentationRow {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
 }

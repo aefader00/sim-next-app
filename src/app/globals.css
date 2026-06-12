@@ -36,6 +36,48 @@ a {
   color: inherit;
 }
 
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+}
+
+.buttonless-link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.35rem;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.buttonless-link-text {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.buttonless-link-icon {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
+.buttonless-link-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  line-height: inherit;
+  padding: 0;
+  text-align: inherit;
+}
+
 .neo-brutal {
   position: relative;
   border: var(--neo-border) !important;

@@ -44,16 +44,23 @@ export default function PresentationCard({
 
   if (!isUserProfile) {
     return (
-      <div className={styles.Presentation}>
-        <div className={styles.PresentationInner}>
+      <div className={clsx(styles.Presentation, styles.PresentationRow)}>
+        <div className={styles.PresentationName}>
+          <b>Name</b>
+          <div>{presentation.name}</div>
+        </div>
+        <div className={styles.PresentationDetails}>
           {presentation.about !== "" ? (
             <div><i>{presentation.about}</i></div>
           ) : null}
-          {authors.length > 0 ? (
-            <div className={styles.Authors}>{formatNiceListFromArray(authors)}</div>
-          ) : (
-            <div>No one is credited yet.</div>
-          )}
+          <div className={styles.PresenterGroup}>
+            <b>Presenters</b>
+            {authors.length > 0 ? (
+              <div className={styles.Authors}>{formatNiceListFromArray(authors)}</div>
+            ) : (
+              <div>No one is credited yet.</div>
+            )}
+          </div>
         </div>
       </div>
     );
