@@ -1,50 +1,68 @@
 .UsersGrid {
 	display: grid;
-	gap: 1.5rem;
+	gap: var(--spacing-sm);
 	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 	justify-content: center;
+	background: var(--app-surface);
+	padding-inline: var(--spacing-sm);
+	padding-bottom: var(--spacing-lg);
 }
 
-.resultsWrapper {
-	padding: var(--section-padding);
+.UsersGrid > * {
+	width: 100%;
+	min-width: 0;
+	background: var(--app-card-bg);
+	border: var(--app-border-width) solid var(--app-border);
+	border-radius: var(--border-md);
 }
 
-.printTitle {
+.printHeader {
 	display: none;
 }
 
 @media print {
 	@page {
-		size: letter landscape;
-		margin: 0.2in;
+		size: legal landscape;
+		margin: 0.25in 0.3in;
 	}
 
-	:global(nav),
+	:global([data-content-nav]),
+	:global([data-mobile-content-bar]),
+	:global([data-page-title]),
+	:global([data-action-mode-backdrop]),
 	.screenToolbar {
 		display: none !important;
 	}
 
-	.resultsWrapper {
-		padding: 0;
-	}
-
-	.printTitle {
+	.printHeader {
 		display: block;
-		margin: 0 0 0.08in;
-		color: #111;
-		font-size: 11pt;
+		font-family: system-ui, sans-serif;
+		font-size: 9pt;
 		font-weight: 700;
-		line-height: 1.1;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: #000;
+		margin-bottom: 0.15in;
 	}
 
 	.UsersGrid {
-		grid-template-columns: repeat(8, minmax(0, 1fr));
-		gap: 0.08in;
+		grid-template-columns: repeat(10, minmax(0, 1fr));
+		gap: 0.06in;
 		justify-content: stretch;
+		padding: 0;
+		background: white;
+		color: #000;
 	}
 
 	.UsersGrid > * {
 		break-inside: avoid;
 		page-break-inside: avoid;
+		background: white !important;
+		border-color: #ccc !important;
+	}
+
+	.UsersGrid a {
+		text-decoration: none;
+		color: inherit;
 	}
 }

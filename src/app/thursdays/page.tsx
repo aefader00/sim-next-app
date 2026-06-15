@@ -1,31 +1,82 @@
 import { Suspense } from "react";
 import styles from "@/components/domain/thursdays/Thursdays.module.css";
+import thursdayPageStyles from "@/components/domain/thursdays/ThursdayPage.module.css";
 import { Button } from "@/components/ui/AntD";
-import Split from "@/components/ui/Split";
+import NavContent from "@/components/layout/NavContent";
+import PageTitle from "@/components/layout/PageTitle";
 import { getFilteredThursdays } from "@/actions/thursdays";
 import { getAllSemesters } from "@/actions/semesters";
 import { auth } from "@/authentication";
-import { FilterInput, FilterSelect } from "@/components/ui/Filters";
+import { FilterInput } from "@/components/ui/Filters";
+import SemesterFilterSelect from "@/components/ui/SemesterFilterSelect";
 import ResultsContainer from "@/components/ui/ResultsContainer";
 import ThursdayCard from "@/components/domain/thursdays/ThursdayCard";
+import { ActionModeButton, ActionModeSurface } from "@/components/ui/ActionMode";
+import { formatSemesterCode, getSelectedSemester, getSelectedSemesterId, isAllSemestersValue } from "@/components/ui/semester-filter";
+import RouteModalPopup from "@/components/ui/ModalPopup/RouteModalPopup";
+import ThursdayDetailContent from "@/components/domain/thursdays/ThursdayDetailContent";
+import PersonProfileModal from "@/components/domain/users/PersonProfileModal";
+import AddThursdayFormContent from "@/app/thursdays/add/AddThursdayFormContent";
+import EditThursdayFormContent from "@/app/thursdays/[id]/edit/EditThursdayFormContent";
+import ThursdayDeleteConfirmContent from "@/components/domain/thursdays/ThursdayDeleteConfirmContent";
+import confirmDeleteStyles from "@/components/ui/ConfirmDelete/ConfirmDelete.module.css";
 
 interface ThursdaysProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-function formatSemesterCode(name?: string | null) {
-  if (!name) return "";
+const thursdayModalParams = new Set(["addThursday", "thursdayId", "profileUserId", "editThursdayId", "deleteThursdayId"]);
 
-  const code = name.match(/^(SP|FA)\d{2}$/i);
-  if (code) return name.toUpperCase();
+function getSingleParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
-  const namedSemester = name.match(/^(Spring|Fall)\s+(\d{4})$/i);
-  if (namedSemester) {
-    const term = namedSemester[1].toLowerCase() === "spring" ? "SP" : "FA";
-    return `${term}${namedSemester[2].slice(-2)}`;
+function getThursdaysModalHref(
+  filters: { [key: string]: string | string[] | undefined },
+  modalParam: "addThursday" | "thursdayId" | "profileUserId" | "editThursdayId" | "deleteThursdayId",
+  value: string,
+) {
+  const params = new URLSearchParams();
+
+  for (const [key, filterValue] of Object.entries(filters)) {
+    if (thursdayModalParams.has(key)) continue;
+
+    if (Array.isArray(filterValue)) {
+      filterValue.forEach((item) => {
+        if (item) params.append(key, item);
+      });
+      continue;
+    }
+
+    if (filterValue) {
+      params.set(key, filterValue);
+    }
   }
 
-  return name;
+  params.set(modalParam, value);
+  return `/thursdays?${params.toString()}`;
+}
+
+function getThursdaysReturnHref(filters: { [key: string]: string | string[] | undefined }) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (thursdayModalParams.has(key)) continue;
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (item) params.append(key, item);
+      });
+      continue;
+    }
+
+    if (value) {
+      params.set(key, value);
+    }
+  }
+
+  const query = params.toString();
+  return query ? `/thursdays?${query}` : "/thursdays";
 }
 
 async function ThursdaysList({
@@ -61,46 +112,113 @@ export default async function Thursdays({ searchParams }: ThursdaysProps) {
   const session = await auth();
   const isAdmin = session?.user?.role === "ADMIN";
 
-  const semesterIdParam = Array.isArray(filters.semesterId)
-    ? filters.semesterId[0]
-    : filters.semesterId;
-  const semesterParam = Array.isArray(filters.semester)
-    ? filters.semester[0]
-    : filters.semester;
-  const semesterIdFilter = semesterIdParam || semesterParam;
-  const defaultSemesterId = semesters[0]?.id || null;
-  const selectedSemesterId = semesterIdFilter || defaultSemesterId;
-  const selectedSemester = semesters.find((semester: any) =>
-    semester.id === selectedSemesterId || semester.name === selectedSemesterId
-  );
+  const selectedSemesterId = getSelectedSemesterId(filters, semesters);
+  const selectedSemester = getSelectedSemester(filters, semesters);
   const semesterCode = formatSemesterCode(selectedSemester?.name || selectedSemesterId);
-  const pageTitle = [semesterCode, "Thursdays"].filter(Boolean).join(", ");
+  const currentFilterLabel = isAllSemestersValue(selectedSemesterId) ? "All" : semesterCode;
+  const addThursday = getSingleParam(filters.addThursday);
+  const thursdayId = getSingleParam(filters.thursdayId);
+  const profileUserId = getSingleParam(filters.profileUserId);
+  const editThursdayId = getSingleParam(filters.editThursdayId);
+  const deleteThursdayId = getSingleParam(filters.deleteThursdayId);
+  const thursdaysReturnHref = getThursdaysReturnHref(filters);
 
   return (
     <>
-      <Split
-        start={<h2>{pageTitle}</h2>}
-        end={
-          <>
-            <FilterInput query={"thursdays"} />
-            <FilterSelect
-              filter={"semesterId"}
-              options={semesters}
-              defaultValue={selectedSemesterId}
-            />
-            {isAdmin && <Button href="/thursdays/add">Add</Button>}
-          </>
-        }
-      />
-      <div className={styles.resultsWrapper}>
-        <ResultsContainer>
-          <Suspense
-            fallback={<div style={{ opacity: 0.5 }}>Loading days...</div>}
+      <PageTitle title="Thursdays" filter={currentFilterLabel} />
+      <ActionModeSurface>
+        <NavContent
+          filterContent={
+            <>
+              <FilterInput query={"thursdays"} placeholder="Search production" />
+              <SemesterFilterSelect semesters={semesters} defaultValue={selectedSemesterId} />
+            </>
+          }
+          filterLabel="Search & Filter"
+          manageContent={
+            isAdmin ? (
+              <>
+                <Button href={getThursdaysModalHref(filters, "addThursday", "1")} className="action-button">Add Thursday</Button>
+                <ActionModeButton htmlType="button" className="action-button" mode="edit-thursdays">
+                  Edit Thursdays
+                </ActionModeButton>
+                <ActionModeButton htmlType="button" className="action-button" mode="delete-thursdays">
+                  Delete Thursdays
+                </ActionModeButton>
+              </>
+            ) : null
+          }
+          manageLabel="Manage Thursdays"
+          mobileManageContent={
+            isAdmin ? (
+              <>
+                <Button href={getThursdaysModalHref(filters, "addThursday", "1")} className="action-button">Add</Button>
+                <ActionModeButton htmlType="button" className="action-button" mode="edit-thursdays">
+                  Edit
+                </ActionModeButton>
+                <ActionModeButton htmlType="button" className="action-button" mode="delete-thursdays">
+                  Del
+                </ActionModeButton>
+              </>
+            ) : null
+          }
+        />
+        <div className={styles.ThursdaysContent}>
+          <ResultsContainer>
+            <Suspense
+              fallback={<div style={{ opacity: 0.5, padding: "var(--spacing-md)", background: "transparent" }}>Loading days...</div>}
+            >
+              <ThursdaysList filters={filters} isAdmin={isAdmin} semesters={semesters} />
+            </Suspense>
+          </ResultsContainer>
+        </div>
+        {profileUserId && (
+          <PersonProfileModal key={profileUserId} profileUserId={profileUserId} />
+        )}
+        {addThursday && !thursdayId && !profileUserId && !editThursdayId && !deleteThursdayId && (
+          <RouteModalPopup
+            key="add-thursday"
+            paramName="addThursday"
+            title="Add Thursday"
+            dialogClassName={thursdayPageStyles.thursdayDetailDialog}
           >
-            <ThursdaysList filters={filters} isAdmin={isAdmin} semesters={semesters} />
-          </Suspense>
-        </ResultsContainer>
-      </div>
+            <AddThursdayFormContent />
+          </RouteModalPopup>
+        )}
+        {editThursdayId && !addThursday && !thursdayId && !profileUserId && !deleteThursdayId && (
+          <RouteModalPopup
+            key={editThursdayId}
+            paramName="editThursdayId"
+            title="Edit Thursday"
+            dialogClassName={thursdayPageStyles.thursdayDetailDialog}
+          >
+            <EditThursdayFormContent thursdayId={editThursdayId} />
+          </RouteModalPopup>
+        )}
+        {deleteThursdayId && !addThursday && !thursdayId && !profileUserId && !editThursdayId && (
+          <RouteModalPopup
+            key={deleteThursdayId}
+            paramName="deleteThursdayId"
+            title="Delete Thursday"
+            dialogClassName={confirmDeleteStyles.dialog}
+          >
+            <ThursdayDeleteConfirmContent
+              thursdayId={deleteThursdayId}
+              returnHref={thursdaysReturnHref}
+            />
+          </RouteModalPopup>
+        )}
+        {thursdayId && !addThursday && !editThursdayId && !deleteThursdayId && (
+          <RouteModalPopup
+            key={thursdayId}
+            paramName="thursdayId"
+            title="Thursday"
+            dialogClassName={thursdayPageStyles.thursdayDetailDialog}
+          >
+            <ThursdayDetailContent thursdayId={thursdayId} />
+          </RouteModalPopup>
+        )}
+      </ActionModeSurface>
     </>
   );
 }

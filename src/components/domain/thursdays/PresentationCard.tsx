@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "@/components/domain/thursdays/PresentationCard.module.css";
+import PersonLink from "@/components/ui/PersonLink";
 import { formatNiceListFromArray } from "@/helpers";
 import { Prisma } from "@prisma/client";
 import clsx from "clsx";
@@ -34,9 +35,9 @@ export default function PresentationCard({
     isUserProfile ? (
       <span key={`author.id:${author.id}`}>{author.name}</span>
     ) : (
-      <Link key={`author.id:${author.id}`} href={`/users/${author.id}/`}>
+      <PersonLink key={`author.id:${author.id}`} userId={author.id} className={styles.PersonLink}>
         {author.name}
-      </Link>
+      </PersonLink>
     )
   ));
 
@@ -83,7 +84,7 @@ export default function PresentationCard({
   return (
     <Link
       href={thursdayId ? `/thursdays/${thursdayId}` : "#"}
-      className={clsx(styles.Presentation, styles.GreyButton)}
+      className={clsx(styles.Presentation, styles.ProfilePresentation)}
     >
       {content}
     </Link>

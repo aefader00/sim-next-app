@@ -36,9 +36,9 @@ export default function Welcome() {
 						<b>Massachusetts College of Art and Design</b>. Please login with your MassArt account to continue.
 					</p>
 				)}
-				<h2 style={{ textAlign: "center" }}>
+				<div style={{ textAlign: "center" }}>
 					<LoginButton />
-				</h2>
+				</div>
 				{!isAccessDenied && (
 					<p style={{ color: "#e75f05" }}>
 						<i>If you cannot login with your MassArt account, contact the SIM faculty for help.</i>

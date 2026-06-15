@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { useFieldArray, useWatch } from "react-hook-form";
 import { Empty } from "antd";
-import { Button, Collapse, Modal } from "@/components/ui/AntD";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Collapse } from "@/components/ui/AntD";
 import ProductionForm from "@/components/forms/thursday/ProductionForm";
-import { BasicUser, ProductionInput } from "@/components/forms/schemas";
+import { BasicUser } from "@/components/forms/schemas";
+import ConfirmDelete from "@/components/ui/ConfirmDelete";
+import ModalPopup from "@/components/ui/ModalPopup";
+import confirmDeleteStyles from "@/components/ui/ConfirmDelete/ConfirmDelete.module.css";
+import formStyles from "@/components/forms/thursday/ThursdayForm.module.css";
 
 interface ProductionsSectionProps {
   control: any;
@@ -33,10 +36,11 @@ export default function ProductionsSection({
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-        <strong style={{ fontSize: "14px" }}>Productions</strong>
+      <div className={formStyles.sectionHeader}>
+        <span className={`${formStyles.sectionLabel} ui-label`}>Productions</span>
         <Button
-          type="primary"
+          htmlType="button"
+          className="action-button"
           onClick={() =>
             append({
               name: "",
@@ -52,32 +56,49 @@ export default function ProductionsSection({
 
       {fields.length === 0 ? (
         <Empty
+          className={formStyles.emptyState}
           description="No productions yet."
-          style={{ padding: "24px 0" }}
         />
       ) : (
         <Collapse
+          className={formStyles.collapse}
           defaultActiveKey={fields.map((f: any) => f.id)}
+          expandIcon={({ isActive }) => (
+            <span
+              className={`${formStyles.expandIcon} ${isActive ? formStyles.expandIconOpen : formStyles.expandIconClosed}`}
+              aria-hidden="true"
+            />
+          )}
           items={fields.map((field: any, pIndex) => {
             const name = watchProductions?.[pIndex]?.name;
             const displayName = name || `Unnamed Production ${pIndex + 1}`;
             const label = (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                {displayName}{formattedDate && ` (${formattedDate})`}
+              <span className={formStyles.collapseLabel}>
+                <span className={formStyles.collapseTitle}>{displayName}</span>
+                {formattedDate && <span className={formStyles.collapseMeta}>{formattedDate}</span>}
               </span>
             );
 
             return {
               key: field.id,
+              style: { background: "var(--app-surface)", borderColor: "var(--app-border)" },
+              styles: {
+                header: { background: "var(--app-surface)", color: "var(--app-text)" },
+                body: { background: "var(--app-surface)", color: "var(--app-text)" },
+              },
               label,
               extra: (
-                <DeleteOutlined
-                  style={{ color: "#cf1322" }}
+                <button
+                  type="button"
+                  className={formStyles.iconButton}
+                  aria-label="Remove production"
                   onClick={(e) => {
                     e.stopPropagation();
                     setPendingRemoveIndex(pIndex);
                   }}
-                />
+                >
+                  <span className={`${formStyles.icon} ${formStyles.deleteIcon}`} aria-hidden="true" />
+                </button>
               ),
               children: (
                 <ProductionForm
@@ -91,21 +112,26 @@ export default function ProductionsSection({
         />
       )}
 
-      <Modal
-        title="Remove Production"
+      <ModalPopup
         open={pendingRemoveIndex !== null}
-        onOk={() => {
-          if (pendingRemoveIndex !== null) remove(pendingRemoveIndex);
-          setPendingRemoveIndex(null);
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoveIndex(null);
         }}
-        onCancel={() => setPendingRemoveIndex(null)}
-        okText="Confirm Delete"
-        okButtonProps={{ className: "neo-brutal-button neo-pressable neo-red", style: { border: "none" } }}
-        cancelText="Cancel"
+        title="Remove Production"
+        dialogClassName={confirmDeleteStyles.dialog}
       >
-        <p><strong>Are you sure you want to remove this production?</strong></p>
-        <p>This action cannot be undone.</p>
-      </Modal>
+        <ConfirmDelete
+          itemName="this production"
+          itemType="production"
+          confirmLabel="Remove Production"
+          pendingLabel="Removing..."
+          errorMessage="Could not remove the production."
+          onConfirm={() => {
+            if (pendingRemoveIndex !== null) remove(pendingRemoveIndex);
+          }}
+          onConfirmed={() => setPendingRemoveIndex(null)}
+        />
+      </ModalPopup>
     </div>
   );
 }

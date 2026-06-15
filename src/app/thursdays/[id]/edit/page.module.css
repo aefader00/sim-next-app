@@ -1,8 +1,7 @@
-.profileSplit {
-	--split-padding-x: 0;
+.pageNav {
 	max-width: 50%;
 	margin: 0 auto;
-	border-bottom: var(--neo-border);
+	border-bottom: 1px solid var(--app-border);
 }
 
 .pageWrapper {

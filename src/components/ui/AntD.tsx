@@ -33,7 +33,6 @@ import {
 import { RangePickerProps } from "antd/es/date-picker";
 import { forwardRef } from "react";
 import Block from "@/components/ui/Block";
-import clsx from "clsx";
 
 export interface ButtonProps extends Omit<AntButtonProps, "type"> {
 	href?: string;
@@ -51,7 +50,7 @@ export function Button({ href, onClick, children, type, htmlType, className, ...
 			onClick={onClick as any} 
 			htmlType={finalHtmlType} 
 			type={finalType as any} 
-			className={clsx(!className?.includes("GreyButton") && !className?.includes("neo-green") && !className?.includes("neo-red") && "neo-orange", "neo-brutal-button", className)}
+			className={className}
 			{...props} 
 			pressable={true}
 		>
@@ -61,33 +60,43 @@ export function Button({ href, onClick, children, type, htmlType, className, ...
 }
 
 export function Input(props: InputProps) {
-	return (
-		<Block as={AntInput} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
-	);
+	return <AntInput size="large" {...props} />;
 }
 
 export function TextArea(props: any) {
-	return (
-		<Block as={AntInput.TextArea} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
-	);
+	return <AntInput.TextArea size="large" {...props} />;
 }
 
-export const Select = forwardRef<any, SelectProps>(function Select(props, ref) {
+export const Select = forwardRef<any, SelectProps>(function Select({ suffixIcon, allowClear, ...props }, ref) {
+	const finalAllowClear = allowClear
+		? {
+			clearIcon: <span className="input-theme-icon input-select-clear-icon" aria-hidden="true" />,
+			...(typeof allowClear === "object" ? allowClear : {}),
+		}
+		: allowClear;
+
 	return (
-		<Block ref={ref} as={AntSelect} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
+		<AntSelect
+			ref={ref}
+			size="large"
+			allowClear={finalAllowClear}
+			suffixIcon={suffixIcon ?? (
+				<span className="input-select-arrow" aria-hidden="true">
+					<span className="input-theme-icon input-select-arrow-down" />
+					<span className="input-theme-icon input-select-arrow-up" />
+				</span>
+			)}
+			{...props}
+		/>
 	);
 });
 
 export function DatePicker(props: DatePickerProps) {
-	return (
-		<Block as={AntDatePicker} className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
-	);
+	return <AntDatePicker size="large" {...props} />;
 }
 
 export function RangePicker(props: RangePickerProps) {
-	return (
-		<Block as={AntDatePicker.RangePicker} size="large" className="neo-brutal-input" variant="borderless" {...props} pressable={true} />
-	);
+	return <AntDatePicker.RangePicker size="large" {...props} />;
 }
 
 export function Switch(props: SwitchProps) {
@@ -95,20 +104,18 @@ export function Switch(props: SwitchProps) {
 }
 
 export function Alert(props: AlertProps) {
-	return <AntAlert className="neo-brutal" style={{ background: "white", color: "inherit" }} {...props} />;
+	return <AntAlert {...props} />;
 }
 
 export function Collapse(props: CollapseProps) {
-	return <AntCollapse className="neo-brutal" style={{ background: "white" }} {...props} />;
+	return <AntCollapse {...props} />;
 }
 
 export function Card({ children, className, ...props }: CardProps) {
 	return (
-		<div className="neo-brutal" style={{ cursor: "default", background: "white", color: "inherit", fontWeight: "normal" }}>
-			<AntCard className={clsx("neo-card", className)} variant="borderless" {...props}>
-				{children}
-			</AntCard>
-		</div>
+		<AntCard className={className} {...props}>
+			{children}
+		</AntCard>
 	);
 }
 
@@ -127,7 +134,6 @@ export function UserTransfer({ users, selectedUserKeys, setSelectedUserKeys, ...
 
 	return (
 		<AntTransfer
-			className="neo-transfer"
 			{...props}
 			dataSource={usersWithKeys}
 			targetKeys={selectedUserKeys}
@@ -140,28 +146,17 @@ export function UserTransfer({ users, selectedUserKeys, setSelectedUserKeys, ...
 }
 
 export function Upload(props: UploadProps) {
-	return (
-		<Block as={AntUpload} {...props} pressable={true} />
-	);
+	return <AntUpload {...props} />;
 }
 
 export function Modal({ children, ...props }: ModalProps) {
 	return (
 		<AntModal
 			{...props}
-			modalRender={(modal) => (
-				<div className="neo-brutal" style={{ background: "white", padding: 0, borderRadius: "5px" }}>
-					{modal}
-				</div>
-			)}
 			okButtonProps={{
-				className: "neo-brutal-button neo-pressable neo-orange",
-				style: { border: "none" },
 				...props.okButtonProps
 			}}
 			cancelButtonProps={{
-				className: "neo-brutal-button neo-pressable neo-orange",
-				style: { border: "none" },
 				...props.cancelButtonProps
 			}}
 		>
@@ -171,19 +166,15 @@ export function Modal({ children, ...props }: ModalProps) {
 }
 
 export function Divider(props: DividerProps) {
-	return <AntDivider style={{ borderColor: "#222", borderWidth: "2px", ...props.style }} {...props} />;
+	return <AntDivider style={{ borderColor: "var(--app-border)", borderWidth: "var(--app-border-width)", ...props.style }} {...props} />;
 }
 
 export function Table(props: TableProps<any>) {
 	return (
-		<div className="neo-brutal" style={{ background: "white", padding: 0 }}>
-			<AntTable
-				{...props}
-				pagination={false}
-				rowClassName={() => "neo-table-row"}
-				className={clsx("neo-table", props.className)}
-			/>
-		</div>
+		<AntTable
+			{...props}
+			pagination={false}
+		/>
 	);
 }
 

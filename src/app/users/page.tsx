@@ -1,32 +1,82 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import { getFilteredUsers } from "@/actions/users";
 import { getAllSemesters } from "@/actions/semesters";
-import { Button } from "@/components/ui/AntD";
-import { FilterInput, FilterSelect } from "@/components/ui/Filters";
-import Split from "@/components/ui/Split";
+import { FilterInput } from "@/components/ui/Filters";
+import SemesterFilterSelect from "@/components/ui/SemesterFilterSelect";
+import NavContent from "@/components/layout/NavContent";
+import PageTitle from "@/components/layout/PageTitle";
 import PrintLink from "@/components/ui/PrintLink";
+import { Button } from "@/components/ui/AntD";
+import { ActionModeButton, ActionModeSurface } from "@/components/ui/ActionMode";
+import RouteModalPopup from "@/components/ui/ModalPopup/RouteModalPopup";
+import AddUserFormContent from "@/app/users/add/AddUserFormContent";
+import { formatSemesterCode, getSelectedSemester, getSelectedSemesterId, isAllSemestersValue } from "@/components/ui/semester-filter";
 
 import styles from "@/components/domain/users/Users.module.css";
-import UserCard from "@/components/domain/users/UserCard";
+import profileStyles from "@/components/domain/users/User.module.css";
+import confirmDeleteStyles from "@/components/ui/ConfirmDelete/ConfirmDelete.module.css";
+import UserCardGrid from "@/components/domain/users/UserCardGrid";
+import EditUserFormContent from "@/app/users/[id]/edit/EditUserFormContent";
+import UserDeleteConfirmContent from "@/components/domain/users/UserDeleteConfirmContent";
 import { auth } from "@/authentication";
+import PersonProfileModal from "@/components/domain/users/PersonProfileModal";
 
 interface UsersProps {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-function formatSemesterCode(name?: string | null) {
-	if (!name) return "";
+const userModalParams = new Set(["addUser", "editUserId", "profileUserId", "deleteUserId"]);
 
-	const code = name.match(/^(SP|FA)\d{2}$/i);
-	if (code) return name.toUpperCase();
+function getSingleParam(value: string | string[] | undefined) {
+	return Array.isArray(value) ? value[0] : value;
+}
 
-	const namedSemester = name.match(/^(Spring|Fall)\s+(\d{4})$/i);
-	if (namedSemester) {
-		const term = namedSemester[1].toLowerCase() === "spring" ? "SP" : "FA";
-		return `${term}${namedSemester[2].slice(-2)}`;
+function getUsersReturnHref(filters: { [key: string]: string | string[] | undefined }) {
+	const params = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(filters)) {
+		if (userModalParams.has(key)) continue;
+
+		if (Array.isArray(value)) {
+			value.forEach((item) => {
+				if (item) params.append(key, item);
+			});
+			continue;
+		}
+
+		if (value) {
+			params.set(key, value);
+		}
 	}
 
-	return name;
+	const query = params.toString();
+	return query ? `/users?${query}` : "/users";
+}
+
+function getUsersModalHref(
+	filters: { [key: string]: string | string[] | undefined },
+	modalParam: "addUser" | "editUserId" | "profileUserId" | "deleteUserId",
+	value: string,
+) {
+	const params = new URLSearchParams();
+
+	for (const [key, filterValue] of Object.entries(filters)) {
+		if (userModalParams.has(key)) continue;
+
+		if (Array.isArray(filterValue)) {
+			filterValue.forEach((item) => {
+				if (item) params.append(key, item);
+			});
+			continue;
+		}
+
+		if (filterValue) {
+			params.set(key, filterValue);
+		}
+	}
+
+	params.set(modalParam, value);
+	return `/users?${params.toString()}`;
 }
 
 async function UsersList({ filters }: { filters: any }) {
@@ -37,13 +87,7 @@ async function UsersList({ filters }: { filters: any }) {
 		return <div>There are no results for User {filters?.user}</div>;
 	}
 
-	return (
-		<div className={styles.UsersGrid}>
-			{users.map((user: any) => (
-				<UserCard key={user.id} user={user} />
-			))}
-		</div>
-	);
+	return <UserCardGrid users={users} />;
 }
 
 export default async function UsersPage({ searchParams }: UsersProps) {
@@ -52,46 +96,99 @@ export default async function UsersPage({ searchParams }: UsersProps) {
 	const semesters = semestersResult.success ? semestersResult.data : [];
 	const session = await auth();
 	const isAdmin = session?.user?.role === "ADMIN";
-	
-	const semesterIdParam = Array.isArray(filters.semesterId) ? filters.semesterId[0] : filters.semesterId;
-	const semesterParam = Array.isArray(filters.semester) ? filters.semester[0] : filters.semester;
-	const semesterIdFilter = semesterIdParam || semesterParam;
-	const defaultSemesterId = semesters[0]?.id || null;
-	const selectedSemester = semesterIdFilter === "All"
-		? null
-		: semesters.find((semester: any) =>
-			semester.id === (semesterIdFilter || defaultSemesterId) ||
-			semester.name === (semesterIdFilter || defaultSemesterId)
-		);
-	const printTitle = selectedSemester
-		? formatSemesterCode(selectedSemester.name)
-		: "All Semesters";
-
+	const selectedSemesterId = getSelectedSemesterId(filters, semesters);
+	const selectedSemester = getSelectedSemester(filters, semesters);
+	const currentFilterLabel = isAllSemestersValue(selectedSemesterId)
+		? "All"
+		: formatSemesterCode(selectedSemester?.name || selectedSemesterId);
+	const editUserId = getSingleParam(filters.editUserId);
+	const profileUserId = getSingleParam(filters.profileUserId);
+	const deleteUserId = getSingleParam(filters.deleteUserId);
+	const addUser = getSingleParam(filters.addUser);
+	const usersReturnHref = getUsersReturnHref(filters);
 	return (
 		<>
-			<Split
-				className={styles.screenToolbar}
-				start={<h2>Names & Faces</h2>}
-				end={
-					<>
-						<FilterInput query={"user"} placeholder="Search user"/>
-						<FilterSelect
-							filter={"semesterId"}
-							options={semesters}
-							defaultValue={semesterIdFilter || defaultSemesterId}
-							allLabel="All Semesters"
+			<PageTitle title="People" filter={currentFilterLabel} />
+			<ActionModeSurface>
+				<NavContent
+					className={styles.screenToolbar}
+					filterContent={
+						<>
+							<FilterInput query={"user"} placeholder="Search user" />
+							<SemesterFilterSelect semesters={semesters} defaultValue={selectedSemesterId} />
+						</>
+					}
+					filterLabel="Search & Filter"
+					manageContent={
+						isAdmin ? (
+							<>
+								<Button href={getUsersModalHref(filters, "addUser", "1")} className="action-button">
+									Add User
+								</Button>
+								<ActionModeButton htmlType="button" className="action-button" mode="edit-users" >
+									Edit Users
+								</ActionModeButton>
+								<ActionModeButton htmlType="button" className="action-button" mode="delete-users" >
+									Delete Users
+								</ActionModeButton>
+							</>
+						) : null
+					}
+					manageLabel="Manage People"
+					mobileManageContent={
+						isAdmin ? (
+							<>
+								<Button href={getUsersModalHref(filters, "addUser", "1")} className="action-button">
+									Add
+								</Button>
+								<ActionModeButton htmlType="button" className="action-button" mode="edit-users" >
+									Edit
+								</ActionModeButton>
+								<ActionModeButton htmlType="button" className="action-button" mode="delete-users" >
+									Del
+								</ActionModeButton>
+							</>
+						) : null
+					}
+					printContent={<PrintLink />}
+				/>
+				<div>
+					<div className={styles.printHeader}>
+						{currentFilterLabel !== "All" ? currentFilterLabel : "All Semesters"}
+					</div>
+					<Suspense fallback={<div style={{ opacity: 0.5, padding: "var(--spacing-md)", background: "transparent" }}>Loading users...</div>}>
+						<UsersList filters={filters} />
+					</Suspense>
+				</div>
+				{editUserId && (
+					<RouteModalPopup key={editUserId} paramName="editUserId" title="Edit User">
+						<EditUserFormContent userId={editUserId} showDangerZone={false} />
+					</RouteModalPopup>
+				)}
+				{addUser && !editUserId && !profileUserId && !deleteUserId && (
+					<RouteModalPopup key="add-user" paramName="addUser" title="Add User">
+						<AddUserFormContent />
+					</RouteModalPopup>
+				)}
+				{profileUserId && !editUserId && (
+					<PersonProfileModal key={profileUserId} profileUserId={profileUserId} />
+				)}
+				{deleteUserId && !editUserId && !profileUserId && (
+					<RouteModalPopup
+						key={deleteUserId}
+						paramName="deleteUserId"
+						title="Delete User"
+						dialogClassName={confirmDeleteStyles.dialog}
+					>
+						<UserDeleteConfirmContent
+							userId={deleteUserId}
+							returnHref={usersReturnHref}
 						/>
-						<PrintLink />
-						{isAdmin && <Button href="/users/add">Add User</Button>}
-					</>
-				}
-			/>
-			<div className={styles.resultsWrapper}>
-				<h1 className={styles.printTitle}>{printTitle}</h1>
-				<Suspense fallback={<div style={{ opacity: 0.5 }}>Loading users...</div>}>
-					<UsersList filters={filters} />
-				</Suspense>
-			</div>
+					</RouteModalPopup>
+				)}
+			</ActionModeSurface>
 		</>
 	);
 }
+
+

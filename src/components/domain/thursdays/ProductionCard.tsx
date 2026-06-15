@@ -1,5 +1,5 @@
-import Link from "next/link";
 import styles from "@/components/domain/thursdays/ThursdayCard.module.css";
+import PersonLink from "@/components/ui/PersonLink";
 import PresentationCard from "@/components/domain/thursdays/PresentationCard";
 
 interface ProductionCardProps {
@@ -71,9 +71,9 @@ export default async function ProductionCard({
             <div className={styles.Names}>
               {producers.length > 0 ? (
                 producers.map((producer: any) => (
-                  <Link key={producer.id} href={`/users/${producer.id}`}>
+                  <PersonLink key={producer.id} userId={producer.id} className={styles.PersonLink}>
                     {producer.name}
-                  </Link>
+                  </PersonLink>
                 ))
               ) : (
                 <i>No producers credited yet.</i>
@@ -85,9 +85,9 @@ export default async function ProductionCard({
             <div className={styles.Names}>
               {faculty.length > 0 ? (
                 faculty.map((facultyMember: any) => (
-                  <Link key={facultyMember.id} href={`/users/${facultyMember.id}`}>
+                  <PersonLink key={facultyMember.id} userId={facultyMember.id} className={styles.PersonLink}>
                     {facultyMember.name}
-                  </Link>
+                  </PersonLink>
                 ))
               ) : (
                 <i>No faculty assigned yet.</i>
@@ -100,7 +100,7 @@ export default async function ProductionCard({
       <div className={styles.ProductionDivider} />
 
       <div>
-        <h3 className={styles.SectionTitle}>Presentations</h3>
+        <span className={`ui-label ${styles.PresentationsLabel}`}>Presentations</span>
         <div style={{ marginTop: "0.5rem" }}>
           {production.presentations.length > 0 ? (
             production.presentations.map((presentation: any) => (

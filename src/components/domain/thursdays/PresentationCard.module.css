@@ -2,8 +2,8 @@
   display: flex;
   margin: 0.75rem 0;
   width: 100%;
-  text-decoration: none !important;
-  color: inherit !important;
+  color: inherit;
+  text-decoration: none;
 }
 
 .PresentationRow {
@@ -53,12 +53,25 @@
   gap: 0.25rem;
 }
 
-.GreyButton {
-  background: var(--neo-bg-white) !important;
-  color: #222 !important;
+.ProfilePresentation {
+  color: inherit;
+}
+
+.ProfilePresentation:hover {
+  color: var(--brand-color);
 }
 
 .Presentation a:hover {
+  text-decoration: underline;
+}
+
+.PersonLink {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.14em;
+}
+.PersonLink:hover {
+  color: var(--brand-color);
   text-decoration: underline;
 }
 

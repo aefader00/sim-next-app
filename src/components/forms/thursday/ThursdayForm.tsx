@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Space, Typography } from "antd";
-import { Card, Button, Alert } from "@/components/ui/AntD";
+import { Button, Alert } from "@/components/ui/AntD";
 import {
   transformThursdayFromAPI,
   transformThursdayPayload,
 } from "@/components/forms/thursday/thursday.transformers";
 import ThursdaySection from "@/components/forms/thursday/ThursdaySection";
 import ProductionsSection from "@/components/forms/thursday/ProductionsSection";
-import DeleteButton from "@/components/ui/DeleteButton";
 import { handleFormAction } from "@/helpers";
 import {
   BasicUser,
@@ -18,8 +16,7 @@ import {
   ThursdayInput,
 } from "@/components/forms/schemas";
 import { ActionResult } from "@/actions/utilities";
-
-const { Title, Text } = Typography;
+import styles from "@/components/forms/thursday/ThursdayForm.module.css";
 
 interface ThursdayFormValues extends Omit<ThursdayInput, "date"> {
   productions: ProductionInput[];
@@ -33,8 +30,6 @@ interface ThursdayFormProps {
   semesters: Array<{ id: string; name: string }>;
   thursdayId?: string;
   onSubmit: (data: any) => Promise<ActionResult<any> | any>;
-  onRemove?: (data: { id: string }) => void;
-  isCurrentUserAdmin?: boolean;
 }
 
 export default function ThursdayForm({
@@ -43,8 +38,6 @@ export default function ThursdayForm({
   semesters,
   thursdayId,
   onSubmit,
-  onRemove,
-  isCurrentUserAdmin = false,
 }: ThursdayFormProps) {
   // Transform API data into form shape if provided
   const initialValues: ThursdayFormValues = defaultValues
@@ -76,8 +69,8 @@ export default function ThursdayForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <Space orientation="vertical" style={{ width: "100%" }} size="large">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.form}>
+      <div className={styles.formStack}>
         {error && (
           <Alert
             description={error}
@@ -89,38 +82,17 @@ export default function ThursdayForm({
 
         <ThursdaySection control={control} semesters={semesters} />
         <ProductionsSection control={control} users={users} />
+      </div>
 
-        <Button type="submit" disabled={isSubmitting} className="neo-green" style={{ width: "100%" }}>
+      <div className={styles.submitRow}>
+        <Button type="submit" disabled={isSubmitting} className="accept-button">
           {isSubmitting
             ? "Saving..."
             : thursdayId
               ? "Save Changes"
               : "Create Day"}
         </Button>
-
-        {thursdayId && isCurrentUserAdmin && onRemove && (
-          <Card
-            title={
-              <Title level={4} type="danger" style={{ margin: 0 }}>
-                Danger Zone
-              </Title>
-            }
-            style={{ borderColor: "#ffa39e", backgroundColor: "#fff2f0" }}
-          >
-            <Space orientation="vertical" style={{ width: "100%" }}>
-              <Text>
-                This permanently removes this Day and all its associated
-                productions and presentations from the database.
-              </Text>
-              <DeleteButton
-                itemName={defaultValues.name + "?"}
-                buttonText="Permanently remove"
-                onConfirm={() => onRemove({ id: thursdayId })}
-              />
-            </Space>
-          </Card>
-        )}
-      </Space>
+      </div>
     </form>
   );
 }

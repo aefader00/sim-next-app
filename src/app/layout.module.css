@@ -1,0 +1,192 @@
+.appShell {
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+	min-height: 0;
+	overflow: hidden;
+	background: var(--app-bg);
+	color: var(--app-text);
+}
+
+.appDivider {
+	display: flex;
+	align-items: stretch;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.navDivider {
+	position: relative;
+	z-index: 20;
+	flex: 0 0 auto;
+	min-width: 0;
+	min-height: 0;
+	overflow: visible;
+	background: var(--app-surface);
+	overscroll-behavior: contain;
+}
+
+.navDivider::before {
+	display: block;
+	visibility: hidden;
+	box-sizing: border-box;
+	min-inline-size: calc(var(--nav-rail-content-width) + (var(--spacing-sm) * 2) + var(--app-border-width));
+	padding: var(--spacing-sm);
+	border-right: var(--app-border-width) solid transparent;
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-h1);
+	font-weight: var(--font-weight-bold);
+	line-height: var(--line-height-tight);
+	white-space: nowrap;
+	content: "SIM";
+}
+
+.contentDivider {
+	flex: 1 1 auto;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto minmax(0, 1fr);
+	align-content: start;
+	align-items: stretch;
+	min-width: 0;
+	min-height: 0;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	background: var(--app-surface);
+}
+
+.contentDivider > * {
+	grid-column: 1 / -1;
+	min-width: 0;
+}
+
+.contentDivider > [data-page-title] {
+	grid-column: 1 / -1;
+	grid-row: 1;
+}
+
+.contentDivider > [data-page-content] {
+	display: contents;
+}
+
+.contentDivider:has(> [data-page-content] > [data-content-nav]) {
+	grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+}
+
+.contentDivider:has(> [data-page-content] > [data-content-nav]) > [data-page-title] {
+	grid-column: 2;
+}
+
+.contentDivider > [data-page-content] > [data-content-nav] {
+	position: sticky;
+	top: 0;
+	grid-column: 1;
+	grid-row: 1 / -1;
+	align-self: start;
+	z-index: auto;
+	block-size: 100dvh;
+	max-block-size: 100dvh;
+	min-height: 0;
+}
+
+.contentDivider > [data-page-content][data-action-mode-active="true"] > [data-content-nav] {
+	z-index: 35;
+	border-right-color: color-mix(in srgb, var(--app-border) 50%, #000000);
+}
+
+.contentDivider > [data-page-content][data-action-mode-active="true"] > [data-content-nav]::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	background: rgba(0, 0, 0, 0.5);
+	pointer-events: none;
+}
+
+.contentDivider > [data-page-content] > :not([data-content-nav]):not([data-action-mode-backdrop]) {
+	grid-column: 2;
+	grid-row: 2;
+	min-width: 0;
+	min-height: 0;
+	padding-top: var(--spacing-sm);
+	overflow: visible;
+	overscroll-behavior: contain;
+}
+
+.contentDivider > [data-page-content] > [data-full-bleed-content]:not([data-content-nav]):not([data-action-mode-backdrop]) {
+	padding-top: 0;
+}
+
+.contentDivider > :not([data-page-title]):not([data-page-content]) {
+	grid-row: 1 / -1;
+	min-height: 0;
+	overflow: auto;
+}
+
+@media print {
+	.appShell,
+	.appDivider {
+		display: block;
+		height: auto;
+		overflow: visible;
+	}
+
+	.navDivider {
+		display: none;
+	}
+
+	.contentDivider {
+		display: block;
+		overflow: visible;
+		height: auto;
+	}
+}
+
+@media (max-width: 768px) {
+	.appDivider {
+		flex-direction: column;
+	}
+
+	.navDivider {
+		flex: 0 0 auto;
+		width: 100%;
+		z-index: 50;
+		border-right: 0;
+		border-bottom: none;
+	}
+
+	.navDivider::before {
+		content: none;
+	}
+
+	.contentDivider {
+		overflow: auto;
+		grid-template-rows: auto;
+	}
+
+	/* Collapse the two-column sidebar+content layout to single column */
+	.contentDivider:has(> [data-page-content] > [data-content-nav]) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.contentDivider:has(> [data-page-content] > [data-content-nav]) > [data-page-title] {
+		grid-column: 1;
+	}
+
+	/* Reset explicit grid placement from desktop rules */
+	.contentDivider > [data-page-content] > :not([data-content-nav]):not([data-action-mode-backdrop]) {
+		grid-column: 1;
+		grid-row: auto;
+		top: -1px;
+	}
+
+	/* Mobile content bar: full width, flows after page title, sticks when scrolled */
+	.contentDivider > [data-page-content] > [data-mobile-content-bar] {
+		grid-column: 1 / -1;
+		padding-top: 0;
+		top: -3px;
+	}
+}

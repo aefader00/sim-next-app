@@ -1,21 +1,22 @@
-import { CloseOutlined } from "@ant-design/icons";
+import clsx from "clsx";
 import Block from "@/components/ui/Block";
+import styles from "@/components/ui/CloseButton.module.css";
 
 interface CloseButtonProps {
   href: string;
+  className?: string;
 }
 
-export default function CloseButton({ href }: CloseButtonProps) {
+export default function CloseButton({ href, className }: CloseButtonProps) {
   return (
     <Block
       as="a"
       href={href}
       pressable
-      className="neo-brutal-button"
       aria-label="Close"
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40 }}
+      className={clsx(styles.root, className)}
     >
-      <CloseOutlined style={{ fontSize: "1rem" }} />
+      <span className={styles.icon} aria-hidden="true" />
     </Block>
   );
 }

@@ -1,18 +1,15 @@
 "use client";
 
-import { Controller, Control } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { Space } from "antd";
 import {
   Input,
   Select,
-  Button,
 } from "@/components/ui/AntD";
-import { Typography } from "antd";
 import PresentationsField from "@/components/forms/thursday/PresentationsField";
-import { BasicUser, ProductionInput } from "@/components/forms/schemas";
+import { BasicUser } from "@/components/forms/schemas";
 import styles from "@/components/forms/thursday/ProductionForm.module.css";
-
-const { Text } = Typography;
+import formStyles from "@/components/forms/thursday/ThursdayForm.module.css";
 
 const LOCATIONS = [
   { label: "Pozen Center", value: "Pozen Center" },
@@ -37,10 +34,8 @@ export default function ProductionForm({
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="large">
       <div className={styles.formGrid}>
-        <div>
-          <Text strong style={{ display: "block", marginBottom: "8px" }}>
-            Production Name
-          </Text>
+        <div className={formStyles.fieldStack}>
+          <span className={`${formStyles.fieldLabel} ui-label`}>Production Name</span>
           <Controller
             control={control}
             name={`productions.${productionIndex}.name`}
@@ -53,17 +48,15 @@ export default function ProductionForm({
                   status={fieldState.error ? "error" : ""}
                 />
                 {fieldState.error && (
-                  <Text type="danger">{fieldState.error.message}</Text>
+                  <span className="ui-note">{fieldState.error.message}</span>
                 )}
               </>
             )}
           />
         </div>
 
-        <div>
-          <Text strong style={{ display: "block", marginBottom: "8px" }}>
-            Location
-          </Text>
+        <div className={formStyles.fieldStack}>
+          <span className={`${formStyles.fieldLabel} ui-label`}>Location</span>
           <Controller
             control={control}
             name={`productions.${productionIndex}.location`}
@@ -79,7 +72,7 @@ export default function ProductionForm({
                   status={fieldState.error ? "error" : ""}
                 />
                 {fieldState.error && (
-                  <Text type="danger">{fieldState.error.message}</Text>
+                  <span className="ui-note">{fieldState.error.message}</span>
                 )}
               </>
             )}
@@ -93,21 +86,20 @@ export default function ProductionForm({
           name={`productions.${productionIndex}.producers`}
           render={({ field }) => (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
-                <Text strong>Producers & Faculty</Text>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div className={formStyles.sectionHeader}>
+                <span className={`${formStyles.sectionLabel} ui-label`}>Producers & Faculty</span>
+                <div className={formStyles.inlineActions}>
                   <button
                     type="button"
                     onClick={() => field.onChange(producerUsers.map((u) => u.id))}
-                    style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#15803d", fontWeight: 600 }}
+                    className={formStyles.textButton}
                   >
                     Select all
                   </button>
-                  <span style={{ color: "#ccc", fontWeight: 300, userSelect: "none" }}>|</span>
                   <button
                     type="button"
                     onClick={() => field.onChange([])}
-                    style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#cf1322", fontWeight: 600 }}
+                    className={`${formStyles.textButton} ${formStyles.textButtonDanger}`}
                   >
                     Unselect all
                   </button>
@@ -135,21 +127,11 @@ export default function ProductionForm({
                 optionRender={(option) => {
                   const isSelected = (field.value ?? []).includes(option.value as string);
                   return (
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{
-                        fontSize: "0.65rem",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        padding: "2px 6px",
-                        borderRadius: "3px",
-                        flexShrink: 0,
-                        background: isSelected ? "#dcfce7" : "#fff2f0",
-                        color: isSelected ? "#15803d" : "#cf1322",
-                      }}>
+                    <div className={formStyles.optionRow}>
+                      <span className={`${formStyles.optionBadge} ${isSelected ? formStyles.optionBadgeSelected : ""}`}>
                         {isSelected ? "Selected" : "Unselected"}
                       </span>
-                      <span style={{ fontWeight: 600 }}>{option.label}</span>
+                      <span className={formStyles.optionName}>{option.label}</span>
                     </div>
                   );
                 }}

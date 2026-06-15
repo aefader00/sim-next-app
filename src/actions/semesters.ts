@@ -17,6 +17,8 @@ import {
 } from "@/actions/utilities";
 import { SemesterSchema, SemesterInput, FilterSchema } from "@/components/forms/schemas";
 
+const gradeValues = new Set(["P", "NC", "INC", "W"]);
+
 export async function getAllSemesters() {
 	return await action(async () => {
 		return await getAllSemestersUtil();
@@ -95,77 +97,120 @@ export async function getSemesterFromName(name?: string) {
 	});
 }
 
-export async function getAdminSemesterData(semesterId: string, rawFilters: any = {}) {
+export async function getIndividualSemesterData(semesterId: string, rawFilters: any = {}) {
 	return await action(async () => {
 		noStore();
 
 		const validation = FilterSchema.safeParse(rawFilters);
 		const filters = validation.success ? validation.data : {};
 		const userSearch = Array.isArray(filters.user) ? filters.user[0] : (filters.user || "");
+		const isAllSemesters = semesterId === "All";
 
-		const semester = await prisma.semester.findUnique({
-			where: { id: semesterId },
-			select: {
-				id: true,
-				name: true,
-				thursdays: {
-					orderBy: { date: "asc" },
-					select: {
-						id: true,
-						date: true,
-						name: true,
-						productions: {
-							select: {
-								id: true,
-								name: true,
-								location: true,
-								presentations: {
-									select: { 
-										id: true,
-										name: true,
-										presenters: {
-											select: { id: true, name: true, image: true, role: true }
-										}
+		const semester = isAllSemesters
+			? null
+			: await prisma.semester.findUnique({
+				where: { id: semesterId },
+				select: {
+					id: true,
+					name: true,
+					thursdays: {
+						orderBy: { date: "asc" },
+						select: {
+							id: true,
+							date: true,
+							name: true,
+							productions: {
+								select: {
+									id: true,
+									name: true,
+									location: true,
+									presentations: {
+										select: { 
+											id: true,
+											name: true,
+											presenters: {
+												select: { id: true, name: true, image: true, role: true }
+											}
+										},
 									},
 								},
 							},
 						},
 					},
+					users: {
+						select: { id: true, name: true }
+					},
 				},
-				users: {
-					select: { id: true, name: true }
-				},
-			},
-		});
+			});
 
-		if (!semester) {
+		if (!isAllSemesters && !semester) {
 			return { semester: null, users: [] };
 		}
 
-		const midTimestamp = getMidSemesterTimestamp(semester.thursdays);
+		const midTimestamp = semester ? getMidSemesterTimestamp(semester.thursdays) : null;
+		const scopedProductionWhere = isAllSemesters
+			? {}
+			: { thursday: { semester_id: semesterId } };
+		const scopedPresentationWhere = isAllSemesters
+			? {}
+			: { production: { thursday: { semester_id: semesterId } } };
+		const userSearchWhere = userSearch
+			? {
+				OR: [
+					{ name: { contains: userSearch, mode: "insensitive" as const } },
+					{
+						productions: {
+							some: {
+								...scopedProductionWhere,
+								name: { contains: userSearch, mode: "insensitive" as const },
+							},
+						},
+					},
+					{
+						presentations: {
+							some: {
+								...scopedPresentationWhere,
+								name: { contains: userSearch, mode: "insensitive" as const },
+							},
+						},
+					},
+				],
+			}
+			: {};
 
 		const users = await prisma.user.findMany({
 			where: {
-				semesters: { some: { id: semesterId } },
-				name: { contains: userSearch, mode: "insensitive" },
+				...(isAllSemesters ? {} : { semesters: { some: { id: semesterId } } }),
+				...userSearchWhere,
 				role: { not: "STAFF" },
 			},
 			orderBy: { name: "asc" },
 			select: {
 				id: true,
 				name: true,
+				semesters: {
+					orderBy: { name: "asc" },
+					select: { id: true, name: true },
+				},
+				semesterGrades: {
+					where: isAllSemesters ? {} : { semesterId },
+					select: { semesterId: true, grade: true },
+				},
 				productions: { 
-					where: { thursday: { semester_id: semesterId } },
+					where: scopedProductionWhere,
 					include: { thursday: { select: { id: true, date: true } } } 
 				},
 				presentations: { 
-					where: { production: { thursday: { semester_id: semesterId } } },
+					where: scopedPresentationWhere,
 					include: { production: { include: { thursday: { select: { id: true, date: true } } } } } 
 				},
 			},
 		});
 
 		const usersWithStats = users.map((user) => {
+			const gradesBySemester = new Map(
+				user.semesterGrades.map((gradeRecord) => [gradeRecord.semesterId, gradeRecord.grade]),
+			);
 			const productions = (user.productions || []).map((production) => ({
 				...production,
 				date: production.thursday?.date,
@@ -179,6 +224,10 @@ export async function getAdminSemesterData(semesterId: string, rawFilters: any =
 			return {
 				id: user.id,
 				name: user.name,
+				semesters: user.semesters.map((semester) => ({
+					...semester,
+					grade: gradesBySemester.get(semester.id) || null,
+				})),
 				productions,
 				presentationsBeforeMid: midTimestamp ? semesterPresentations.filter((presentation) => presentation.date && new Date(presentation.date).getTime() < midTimestamp) : semesterPresentations,
 				presentationsAfterMid: midTimestamp ? semesterPresentations.filter((presentation) => presentation.date && new Date(presentation.date).getTime() >= midTimestamp) : [],
@@ -186,6 +235,81 @@ export async function getAdminSemesterData(semesterId: string, rawFilters: any =
 		});
 
 		return { semester, users: usersWithStats };
+	});
+}
+
+export async function updateUserSemesterGrades(data: {
+	userId: string;
+	grades: Record<string, string | null | undefined>;
+}) {
+	return await action(async () => {
+		await ensureAdmin();
+
+		if (!data.userId) {
+			throw new Error("User is required.");
+		}
+
+		const user = await prisma.user.findUnique({
+			where: { id: data.userId },
+			select: {
+				semesters: { select: { id: true } },
+			},
+		});
+
+		if (!user) {
+			throw new Error("User not found.");
+		}
+
+		const enrolledSemesterIds = new Set(user.semesters.map((semester) => semester.id));
+		const gradeEntries = Object.entries(data.grades || {}).filter(([semesterId, grade]) => {
+			if (!enrolledSemesterIds.has(semesterId)) {
+				return false;
+			}
+
+			return grade == null || gradeValues.has(grade);
+		});
+
+		await prisma.$transaction(async (tx) => {
+			const clearedSemesterIds = gradeEntries
+				.filter(([, grade]) => grade == null)
+				.map(([semesterId]) => semesterId);
+
+			if (clearedSemesterIds.length > 0) {
+				await tx.semesterGrade.deleteMany({
+					where: {
+						userId: data.userId,
+						semesterId: { in: clearedSemesterIds },
+					},
+				});
+			}
+
+			for (const [semesterId, grade] of gradeEntries) {
+				if (grade == null) {
+					continue;
+				}
+
+				await tx.semesterGrade.upsert({
+					where: {
+						userId_semesterId: {
+							userId: data.userId,
+							semesterId,
+						},
+					},
+					create: {
+						userId: data.userId,
+						semesterId,
+						grade: grade as any,
+					},
+					update: {
+						grade: grade as any,
+					},
+				});
+			}
+		});
+
+		revalidatePath("/individual");
+		revalidatePath("/users");
+		return { success: true };
 	});
 }
 
@@ -230,7 +354,8 @@ export async function addSemester(data: SemesterInput & { dates: string[], users
 					},
 				},
 			});
-			revalidatePath("/admin");
+			revalidatePath("/semester");
+			revalidatePath("/individual");
 			return semester;
 		} catch (error: any) {
 			if (error.code === "P2002") {
@@ -360,8 +485,9 @@ export async function editSemester(data: { id: string, name: string, users: stri
 				}
 			}
 
-			revalidatePath("/admin");
-			revalidatePath(`/admin/semesters/${data.id}`);
+			revalidatePath("/semester");
+			revalidatePath("/individual");
+			revalidatePath(`/semester/${data.id}/edit`);
 			return { success: true };
 		});
 	});
@@ -375,7 +501,8 @@ export async function removeSemester(data: { id: string }) {
 			where: { id: data.id },
 		});
 
-		revalidatePath("/admin");
+		revalidatePath("/semester");
+		revalidatePath("/individual");
 		return { success: true };
 	});
 }

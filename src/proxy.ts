@@ -17,8 +17,8 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
-  // Restrict access to admin routes for non-admin users
-  if (pathname.startsWith("/admin") && !isAdmin) {
+  // Restrict access to semester management routes for non-admin users
+  if (pathname.startsWith("/semester") && !isAdmin) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 

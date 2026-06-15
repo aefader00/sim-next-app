@@ -1,13 +1,10 @@
 "use client";
 
-import { Controller, Control } from "react-hook-form";
-import { Card, Input, DatePicker, Select } from "@/components/ui/AntD";
-import { Typography } from "antd";
+import { Controller } from "react-hook-form";
+import { Input, DatePicker, Select } from "@/components/ui/AntD";
 import dayjs from "dayjs";
-import { ThursdayInput } from "@/components/forms/schemas";
 import styles from "@/components/forms/thursday/ThursdaySection.module.css";
-
-const { Text } = Typography;
+import formStyles from "@/components/forms/thursday/ThursdayForm.module.css";
 
 interface ThursdaySectionProps {
   control: any;
@@ -19,13 +16,11 @@ export default function ThursdaySection({
   semesters,
 }: ThursdaySectionProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div className={formStyles.formStack}>
       <div className={semesters ? styles.formGrid : undefined}>
         {semesters && (
-          <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
-              Semester
-            </Text>
+          <div className={formStyles.fieldStack}>
+            <span className={`${formStyles.fieldLabel} ui-label`}>Semester</span>
             <Controller
               control={control}
               name="semesterId"
@@ -40,10 +35,8 @@ export default function ThursdaySection({
             />
           </div>
         )}
-        <div>
-          <Text strong style={{ display: "block", marginBottom: "8px" }}>
-            Day Name
-          </Text>
+        <div className={formStyles.fieldStack}>
+          <span className={`${formStyles.fieldLabel} ui-label`}>Day Name</span>
           <Controller
             control={control}
             name="name"
@@ -57,7 +50,7 @@ export default function ThursdaySection({
                   status={fieldState.error ? "error" : ""}
                 />
                 {fieldState.error && (
-                  <Text type="danger">{fieldState.error.message}</Text>
+                  <span className="ui-note">{fieldState.error.message}</span>
                 )}
               </>
             )}
@@ -65,10 +58,8 @@ export default function ThursdaySection({
         </div>
       </div>
 
-      <div>
-        <Text strong style={{ display: "block", marginBottom: "8px" }}>
-          Date
-        </Text>
+      <div className={formStyles.fieldStack}>
+        <span className={`${formStyles.fieldLabel} ui-label`}>Date</span>
         <Controller
           control={control}
           name="date"
@@ -87,7 +78,7 @@ export default function ThursdaySection({
                 status={fieldState.error ? "error" : ""}
               />
               {fieldState.error && (
-                <Text type="danger">{fieldState.error.message}</Text>
+                <span className="ui-note">{fieldState.error.message}</span>
               )}
             </>
           )}

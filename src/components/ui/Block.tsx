@@ -27,19 +27,12 @@ const Block = forwardRef(function Block<T extends ElementType = "button">(
 		className, 
 		disabled, 
 		onClick, 
-		depth, 
 		pressable = false, 
 		href, 
 		...rest 
 	} = props as any;
 
-	const style = depth ? { "--neo-depth": `${depth}px` } as React.CSSProperties : {};
-
-	const finalClassName = clsx(
-		"neo-brutal",
-		pressable && "neo-pressable",
-		className
-	);
+	const finalClassName = clsx(className);
 
 	const isLink = href && !disabled;
 
@@ -68,7 +61,7 @@ const Block = forwardRef(function Block<T extends ElementType = "button">(
 	);
 
 	return (
-		<div className={clsx(styles.wrapper, disabled && styles.disabled)} style={style}>
+		<div className={clsx(styles.wrapper, pressable && styles.pressable, disabled && styles.disabled)}>
 			{shouldWrap ? (
 				<Link href={href!}>
 					{element}

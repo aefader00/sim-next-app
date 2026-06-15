@@ -1,12 +1,24 @@
 import "antd/dist/reset.css";
 import { Metadata } from "next";
+import Script from "next/script";
 
 import { auth } from "@/authentication";
 
-import "./globals.css";
+import "./fonts/sour-gummy/sour-gummy.css";
+import "./global-styles/app-theme/styling-theme.css";
+import "./global-styles/app-theme/font-theme.css";
+import "./global-styles/app-theme/layout-theme.css";
+import "./global-styles/button-theme.css";
+import "./global-styles/input-theme.css";
 import { ConfigProvider } from "antd";
 
+import AccountModals from "@/components/layout/AccountModals";
+import EditUserFormContent from "@/app/users/[id]/edit/EditUserFormContent";
 import NavBar from "@/components/layout/NavBar";
+import ThemeSessionSync from "@/components/theme/ThemeSessionSync";
+import UserProfileContent from "@/components/domain/users/UserProfileContent";
+import styles from "@/app/layout.module.css";
+import profileStyles from "@/components/domain/users/User.module.css";
 
 // Global metadata for the application
 export const metadata: Metadata = {
@@ -14,45 +26,69 @@ export const metadata: Metadata = {
 	description: "System for Information Management",
 };
 
+const themeInitScript = `
+(() => {
+  try {
+    const key = "sim-theme";
+    const storedTheme = sessionStorage.getItem(key);
+    const isValidTheme = storedTheme === "light" || storedTheme === "dark";
+
+    if (isValidTheme) {
+      document.documentElement.dataset.theme = storedTheme;
+      return;
+    }
+
+    sessionStorage.setItem(key, document.documentElement.dataset.theme || "light");
+  } catch {}
+})();
+`;
+
 // Root layout component that wraps every page and provides global styles and configuration
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const session = await auth();
 
 	return (
-		<html lang="en">
+		<html lang="en" data-theme="light" suppressHydrationWarning>
 			<body>
+				<Script
+					id="theme-init"
+					strategy="beforeInteractive"
+					dangerouslySetInnerHTML={{ __html: themeInitScript }}
+				/>
+				<ThemeSessionSync />
 				<ConfigProvider
 					wave={{ disabled: true }}
-					// Ant Design theme configuration
-					theme={{
-						token: {
-							borderRadius: 5,
-							colorPrimary: "#f26419",
-							colorBorder: "#222222",
-							lineWidth: 2,
-						},
-						components: {
-							Button: {
-							boxShadowSecondary: "none",
-							boxShadowTertiary: "none",
-							paddingInline: 20,  
-							controlHeight: 40,  
-							lineWidth: 4,
-							},
-							Input: {
-								boxShadow: "none",
-							},
-							Select: {
-								boxShadow: "none",
-							},
-							Card: {
-								colorBorderSecondary: "#222222",
-							},
-						},
-					}}
 				>
-					<NavBar session={session} />
-					<div>{children}</div>
+					<div className={styles.appShell}>
+						<div className={styles.appDivider}>
+							{session && (
+								<div className={styles.navDivider}>
+									<NavBar session={session} />
+								</div>
+							)}
+							<main className={styles.contentDivider}>
+								{children}
+							</main>
+						</div>
+					</div>
+					{session?.user?.id && (
+						<AccountModals
+							profileDialogClassName={profileStyles.ProfileDialog}
+							profile={
+								<UserProfileContent
+									userId={session.user.id}
+									editHref="?accountEdit=1"
+								/>
+							}
+							edit={
+								<EditUserFormContent
+									userId={session.user.id}
+									showDangerZone={false}
+									redirectHref="?accountProfile=1"
+								/>
+							}
+						/>
+					)}
 				</ConfigProvider>
 			</body>
 		</html>

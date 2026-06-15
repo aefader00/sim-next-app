@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useFieldArray, Control, useWatch } from "react-hook-form";
-import { Empty, Space, Typography } from "antd";
+import { Controller, useFieldArray, useWatch } from "react-hook-form";
+import { Space } from "antd";
 import {
   Input,
   Select,
   Collapse,
   Button,
-  Modal,
 } from "@/components/ui/AntD";
-import { DeleteOutlined } from "@ant-design/icons";
 import { BasicUser } from "@/components/forms/schemas";
-
-const { Text } = Typography;
+import ConfirmDelete from "@/components/ui/ConfirmDelete";
+import ModalPopup from "@/components/ui/ModalPopup";
+import confirmDeleteStyles from "@/components/ui/ConfirmDelete/ConfirmDelete.module.css";
+import formStyles from "@/components/forms/thursday/ThursdayForm.module.css";
 
 interface PresentationsFieldProps {
   productionIndex: number;
@@ -41,10 +41,11 @@ export default function PresentationsField({
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-        <strong style={{ fontSize: "14px" }}>Presentations</strong>
+      <div className={formStyles.sectionHeader}>
+        <span className={`${formStyles.sectionLabel} ui-label`}>Presentations</span>
         <Button
-          type="primary"
+          htmlType="button"
+          className="action-button"
           onClick={() =>
             append({
               name: "",
@@ -57,36 +58,51 @@ export default function PresentationsField({
       </div>
 
       {fields.length === 0 ? (
-        <Empty
-          description="No presentations yet."
-          style={{ padding: "24px 0" }}
-        />
+        <p className={formStyles.emptyText}>No presentations yet.</p>
       ) : (
         <Collapse
+          className={formStyles.collapse}
+          expandIcon={({ isActive }) => (
+            <span
+              className={`${formStyles.expandIcon} ${isActive ? formStyles.expandIconOpen : formStyles.expandIconClosed}`}
+              aria-hidden="true"
+            />
+          )}
           items={fields.map((field: any, pIndex) => {
             const name = watchPresentations?.[pIndex]?.name;
-            const label = name
-              ? `Presentation ${pIndex + 1}: ${name}`
-              : `Unnamed Presentation ${pIndex + 1}`;
+            const label = (
+              <span className={formStyles.collapseLabel}>
+                <span className={formStyles.collapseTitle}>
+                  {name ? `Presentation ${pIndex + 1}: ${name}` : `Unnamed Presentation ${pIndex + 1}`}
+                </span>
+              </span>
+            );
 
             return {
               key: field.id,
+              style: { background: "var(--app-surface)", borderColor: "var(--app-border)" },
+              styles: {
+                header: { background: "var(--app-surface)", color: "var(--app-text)" },
+                body: { background: "var(--app-surface)", color: "var(--app-text)" },
+              },
               label,
               extra: (
-                <DeleteOutlined
-                  style={{ color: "#cf1322" }}
+                <button
+                  type="button"
+                  className={formStyles.iconButton}
+                  aria-label="Remove presentation"
                   onClick={(e) => {
                     e.stopPropagation();
                     setPendingRemoveIndex(pIndex);
                   }}
-                />
+                >
+                  <span className={`${formStyles.icon} ${formStyles.deleteIcon}`} aria-hidden="true" />
+                </button>
               ),
               children: (
                 <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-                  <div>
-                    <Text strong style={{ display: "block", marginBottom: "8px" }}>
-                      Presentation Name
-                    </Text>
+                  <div className={formStyles.fieldStack}>
+                    <span className={`${formStyles.fieldLabel} ui-label`}>Presentation Name</span>
                     <Controller
                       control={control}
                       name={`productions.${productionIndex}.presentations.${pIndex}.name`}
@@ -99,7 +115,7 @@ export default function PresentationsField({
                             status={fieldState.error ? "error" : ""}
                           />
                           {fieldState.error && (
-                            <Text type="danger">{fieldState.error.message}</Text>
+                            <span className="ui-note">{fieldState.error.message}</span>
                           )}
                         </>
                       )}
@@ -112,21 +128,20 @@ export default function PresentationsField({
                       name={`productions.${productionIndex}.presentations.${pIndex}.presenters`}
                       render={({ field }) => (
                         <>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
-                            <Text strong>Presenters</Text>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <div className={formStyles.sectionHeader}>
+                            <span className={`${formStyles.sectionLabel} ui-label`}>Presenters</span>
+                            <div className={formStyles.inlineActions}>
                               <button
                                 type="button"
                                 onClick={() => field.onChange(studentUsers.map((u) => u.id))}
-                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#15803d", fontWeight: 600 }}
+                                className={formStyles.textButton}
                               >
                                 Select all
                               </button>
-                              <span style={{ color: "#ccc", fontWeight: 300, userSelect: "none" }}>|</span>
                               <button
                                 type="button"
                                 onClick={() => field.onChange([])}
-                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#cf1322", fontWeight: 600 }}
+                                className={`${formStyles.textButton} ${formStyles.textButtonDanger}`}
                               >
                                 Unselect all
                               </button>
@@ -154,21 +169,11 @@ export default function PresentationsField({
                             optionRender={(option) => {
                               const isSelected = (field.value ?? []).includes(option.value as string);
                               return (
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                  <span style={{
-                                    fontSize: "0.65rem",
-                                    fontWeight: 700,
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.05em",
-                                    padding: "2px 6px",
-                                    borderRadius: "3px",
-                                    flexShrink: 0,
-                                    background: isSelected ? "#dcfce7" : "#fff2f0",
-                                    color: isSelected ? "#15803d" : "#cf1322",
-                                  }}>
+                                <div className={formStyles.optionRow}>
+                                  <span className={`${formStyles.optionBadge} ${isSelected ? formStyles.optionBadgeSelected : ""}`}>
                                     {isSelected ? "Selected" : "Unselected"}
                                   </span>
-                                  <span style={{ fontWeight: 600 }}>{option.label}</span>
+                                  <span className={formStyles.optionName}>{option.label}</span>
                                 </div>
                               );
                             }}
@@ -184,21 +189,26 @@ export default function PresentationsField({
         />
       )}
 
-      <Modal
-        title="Remove Presentation"
+      <ModalPopup
         open={pendingRemoveIndex !== null}
-        onOk={() => {
-          if (pendingRemoveIndex !== null) remove(pendingRemoveIndex);
-          setPendingRemoveIndex(null);
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoveIndex(null);
         }}
-        onCancel={() => setPendingRemoveIndex(null)}
-        okText="Confirm Delete"
-        okButtonProps={{ className: "neo-brutal-button neo-pressable neo-red", style: { border: "none" } }}
-        cancelText="Cancel"
+        title="Remove Presentation"
+        dialogClassName={confirmDeleteStyles.dialog}
       >
-        <p><strong>Are you sure you want to remove this presentation?</strong></p>
-        <p>This action cannot be undone.</p>
-      </Modal>
+        <ConfirmDelete
+          itemName="this presentation"
+          itemType="presentation"
+          confirmLabel="Remove Presentation"
+          pendingLabel="Removing..."
+          errorMessage="Could not remove the presentation."
+          onConfirm={() => {
+            if (pendingRemoveIndex !== null) remove(pendingRemoveIndex);
+          }}
+          onConfirmed={() => setPendingRemoveIndex(null)}
+        />
+      </ModalPopup>
     </div>
   );
 }

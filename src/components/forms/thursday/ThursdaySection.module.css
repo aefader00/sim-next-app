@@ -1,7 +1,7 @@
 .formGrid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 1rem;
+	gap: var(--gap-lg);
 }
 
 @media (max-width: 600px) {

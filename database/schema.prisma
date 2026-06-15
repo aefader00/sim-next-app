@@ -14,6 +14,13 @@ enum Role {
   ADMIN
 }
 
+enum GradeValue {
+  P
+  NC
+  INC
+  W
+}
+
 // User model for authentication and profiles
 model User {
   id            String     @id @default(cuid())
@@ -29,6 +36,7 @@ model User {
   presentations Presentation[]
   productions   Production[]
   semesters     Semester[]
+  semesterGrades SemesterGrade[]
 }
 
 // Presentation model for tracking scheduled talks or demos
@@ -68,6 +76,20 @@ model Semester {
   name      String
   thursdays Thursday[]
   users     User[]
+  grades    SemesterGrade[]
+}
+
+// Grade assigned to one user for one semester.
+model SemesterGrade {
+  id         String     @id @default(cuid())
+  grade      GradeValue
+  userId     String
+  semesterId String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  semester   Semester   @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, semesterId])
+  @@index([semesterId])
 }
 
 // NextAuth Account model for OAuth provider linking

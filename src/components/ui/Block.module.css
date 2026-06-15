@@ -5,6 +5,10 @@
 	box-sizing: border-box;
 }
 
+.pressable {
+	cursor: pointer;
+}
+
 .disabled {
 	opacity: 0.6;
 	cursor: not-allowed;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Space, Typography } from "antd";
 import {
@@ -14,6 +14,7 @@ import {
 import { transformUserFromAPI } from "@/components/forms/user/user.transformers";
 import ImageUpload from "@/components/ui/ImageUpload";
 import DeleteButton from "@/components/ui/DeleteButton";
+import RepeatableInput from "@/components/ui/RepeatableInput";
 import { handleFormAction } from "@/helpers";
 import { UserInput } from "@/components/forms/schemas";
 import styles from "@/components/forms/user/UserForm.module.css";
@@ -113,12 +114,6 @@ export default function UserForm({
   isCurrentUserAdmin = false,
   allSemesters = [],
 }: UserFormProps) {
-  const semesterStartSelectRef = useRef<{
-    scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
-  } | null>(null);
-  const semesterEndSelectRef = useRef<{
-    scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
-  } | null>(null);
   const defaultSemesterCode = getDefaultSemesterCode(allSemesters);
   const initialValues = transformUserFromAPI(user) || {
     name: "",
@@ -126,6 +121,7 @@ export default function UserForm({
     image: "/face.jpg",
     email: "",
     link: "",
+    links: [""],
     about: "",
     role: "STUDENT",
     semesterIds: allSemesters.length > 0 ? [allSemesters[0].id] : [],
@@ -165,9 +161,9 @@ export default function UserForm({
 
         <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
           <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+            <span className={`${styles.fieldLabel} ui-label`}>
               Photo
-            </Text>
+            </span>
             <Controller
               control={control}
               name="image"
@@ -178,123 +174,89 @@ export default function UserForm({
                 />
               )}
             />
-            <Text
-              type="secondary"
-              italic
-              style={{ fontSize: "12px", display: "block", marginTop: "4px" }}
-            >
+            <span className={`${styles.fieldNote} ui-note`}>
               {isCurrentUserAdmin
                 ? <>You can upload high resolution photos up to 8MB.<br />They will be automatically downsized.</>
                 : "Contact SIM faculty to change your photo."}
-            </Text>
+            </span>
           </div>
 
           {isCurrentUserAdmin && (
-            <div>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>
-                Semesters Enrolled
-              </Text>
-              <Controller
-                control={control}
-                name="semesterCodes"
-                render={({ field }) => {
-                  const { startCode, endCode } = getRangeEndpoints(field.value);
+            <div className={styles.adminFields}>
+              <div className={styles.fieldGroup}>
+                <span className={`${styles.fieldLabel} ui-label`}>
+                  Semesters Enrolled
+                </span>
+                <Controller
+                  control={control}
+                  name="semesterCodes"
+                  render={({ field }) => {
+                    const { startCode, endCode } = getRangeEndpoints(field.value);
 
-                  return (
-                    <div className={styles.semesterRange}>
-                      <Select
-                        ref={(instance) => {
-                          semesterStartSelectRef.current = instance;
-                          field.ref(instance);
-                        }}
-                        value={startCode}
-                        placeholder="From"
-                        showSearch
-                        allowClear
-                        options={semesterOptions}
-                        onOpenChange={(open) => {
-                          if (!open) return;
+                    return (
+                      <div className={styles.semesterRange}>
+                        <Select
+                          value={startCode}
+                          placeholder="From"
+                          showSearch
+                          options={semesterOptions}
+                          onChange={(value) => {
+                            field.onChange(
+                              getSemesterCodesInRange(
+                                value as string | undefined,
+                                endCode,
+                              ),
+                            );
+                          }}
+                        />
+                        <span className={styles.semesterRangeSeparator}>to</span>
+                        <Select
+                          value={endCode}
+                          placeholder="To"
+                          showSearch
+                          options={semesterOptions}
+                          onChange={(value) => {
+                            field.onChange(
+                              getSemesterCodesInRange(
+                                startCode,
+                                value as string | undefined,
+                              ),
+                            );
+                          }}
+                        />
+                      </div>
+                    );
+                  }}
+                />
+              </div>
 
-                          window.setTimeout(() => {
-                            semesterStartSelectRef.current?.scrollTo?.({
-                              index: getSemesterNameIndex(startCode || defaultSemesterCode),
-                              align: "top",
-                            });
-                          }, 0);
-                        }}
-                        onChange={(value) => {
-                          field.onChange(
-                            getSemesterCodesInRange(
-                              value as string | undefined,
-                              endCode,
-                            ),
-                          );
-                        }}
-                      />
-                      <span className={styles.semesterRangeSeparator}>to</span>
-                      <Select
-                        ref={(instance) => {
-                          semesterEndSelectRef.current = instance;
-                          field.ref(instance);
-                        }}
-                        value={endCode}
-                        placeholder="To"
-                        showSearch
-                        allowClear
-                        options={semesterOptions}
-                        onOpenChange={(open) => {
-                          if (!open) return;
-
-                          window.setTimeout(() => {
-                            semesterEndSelectRef.current?.scrollTo?.({
-                              index: getSemesterNameIndex(endCode || startCode || defaultSemesterCode),
-                              align: "top",
-                            });
-                          }, 0);
-                        }}
-                        onChange={(value) => {
-                          field.onChange(
-                            getSemesterCodesInRange(
-                              startCode,
-                              value as string | undefined,
-                            ),
-                          );
-                        }}
-                      />
-                    </div>
-                  );
-                }}
-              />
-            </div>
-          )}
-
-          {isCurrentUserAdmin && (
-            <div className={styles.halfField}>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>Role</Text>
-              <Controller
-                control={control}
-                name="role"
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    style={{ width: "100%" }}
-                    options={[
-                      { value: "STUDENT", label: "Student" },
-                      { value: "STAFF", label: "Staff" },
-                      { value: "ADMIN", label: "Admin" },
-                    ]}
-                  />
-                )}
-              />
+              <div className={styles.fieldGroup}>
+                <span className={`${styles.fieldLabel} ui-label`}>Role</span>
+                <Controller
+                  control={control}
+                  name="role"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      style={{ width: "100%" }}
+                      options={[
+                        { value: "STUDENT", label: "Student" },
+                        { value: "STAFF", label: "Staff" },
+                        { value: "ADMIN", label: "Admin" },
+                      ]}
+                    />
+                  )}
+                />
+              </div>
             </div>
           )}
         </Space>
 
         <div className={styles.formGrid}>
           <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+            <span className={`${styles.fieldLabel} ui-label`}>
               Full Name
-            </Text>
+            </span>
             <Controller
               control={control}
               name="name"
@@ -315,9 +277,9 @@ export default function UserForm({
           </div>
 
           <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+            <span className={`${styles.fieldLabel} ui-label`}>
               Pronouns
-            </Text>
+            </span>
             <Controller
               control={control}
               name="pronouns"
@@ -328,9 +290,9 @@ export default function UserForm({
           </div>
 
           <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+            <span className={`${styles.fieldLabel} ui-label`}>
               Email Address
-            </Text>
+            </span>
             <Controller
               control={control}
               name="email"
@@ -350,13 +312,9 @@ export default function UserForm({
                     status={fieldState.error ? "error" : ""}
                   />
                   {!isCurrentUserAdmin && user && (
-                    <Text
-                      type="secondary"
-                      italic
-                      style={{ fontSize: "12px", display: "block" }}
-                    >
+                    <span className={`${styles.fieldNote} ui-note`}>
                       Contact SIM faculty to change your email.
-                    </Text>
+                    </span>
                   )}
                   {fieldState.error && (
                     <Text type="danger">{fieldState.error.message}</Text>
@@ -367,30 +325,31 @@ export default function UserForm({
           </div>
 
           <div>
-            <Text strong style={{ display: "block", marginBottom: "8px" }}>
-              Link
-            </Text>
+            <span className={`${styles.fieldLabel} ui-label`}>
+              Contact & Links
+            </span>
             <Controller
               control={control}
-              name="link"
+              name="links"
               render={({ field }) => (
-                <Input {...field} placeholder="https://..." />
+                <RepeatableInput
+                  id="user-links"
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Phone, https://... or @handle"
+                />
               )}
             />
-            <Text
-              type="secondary"
-              italic
-              style={{ fontSize: "12px", display: "block", marginTop: "4px" }}
-            >
-              Social media, gallery of your presentations, etc.
-            </Text>
+            <span className={`${styles.fieldNote} ui-note`}>
+              Phone number, social media, gallery of your presentations, handles, etc.
+            </span>
           </div>
         </div>
 
         <div className={styles.aboutField}>
-          <Text strong style={{ display: "block", marginBottom: "8px" }}>
+          <span className={`${styles.fieldLabel} ui-label`}>
             About
-          </Text>
+          </span>
           <Controller
             control={control}
             name="about"
@@ -405,7 +364,7 @@ export default function UserForm({
           />
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="neo-green" style={{ width: "100%" }}>
+        <Button type="submit" disabled={isSubmitting} className="accept-button" style={{ width: "100%" }}>
           {isSubmitting ? "Saving..." : user ? "Save Changes" : "Create User"}
         </Button>
 

@@ -2,11 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Space, Typography } from "antd";
 import {
   RangePicker,
   Select,
-  Card,
   Button,
   Alert,
 } from "@/components/ui/AntD";
@@ -14,13 +12,10 @@ import {
   transformSemesterFromAPI,
   transformSemesterPayload,
 } from "@/components/forms/semester/semester.transformers";
-import DeleteButton from "@/components/ui/DeleteButton";
 import { handleFormAction } from "@/helpers";
 import { BasicUser, SemesterInput } from "@/components/forms/schemas";
 import { ActionResult } from "@/actions/utilities";
 import styles from "@/components/forms/semester/SemesterForm.module.css";
-
-const { Text, Title } = Typography;
 
 function getSemesterNameOptions(currentValue?: string) {
   const options = Array.from({ length: 100 }, (_, year) => {
@@ -75,20 +70,16 @@ interface SemesterFormValues extends Omit<SemesterInput, "dates" | "users"> {
 
 interface SemesterFormProps {
   onSubmit: (data: any) => Promise<ActionResult<any> | any>;
-  onRemove?: (data: { id: string }) => void;
   semester?: any;
   usersFromCurrentSemester?: BasicUser[];
   users: BasicUser[];
-  isCurrentUserAdmin?: boolean;
 }
 
 export default function SemesterForm({
   onSubmit,
-  onRemove,
   semester,
   usersFromCurrentSemester,
   users,
-  isCurrentUserAdmin = false,
 }: SemesterFormProps) {
   const semesterSelectRef = useRef<{
     scrollTo?: (arg: { index: number; align?: "top" | "bottom" | "auto" }) => void;
@@ -124,8 +115,7 @@ export default function SemesterForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.form}>
         {error && (
           <Alert
             description={error}
@@ -134,10 +124,10 @@ export default function SemesterForm({
             closable
           />
         )}
-        <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+        <div className={styles.formStack}>
           <div className={styles.formGrid}>
-            <div>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>Semester Name</Text>
+            <div className={styles.fieldStack}>
+              <span className={`${styles.fieldLabel} ui-label`}>Semester Name</span>
               <Controller
                 control={control}
                 name="name"
@@ -152,6 +142,7 @@ export default function SemesterForm({
                       }}
                       value={field.value || undefined}
                       showSearch
+                      listHeight={400}
                       placeholder="e.g. FA26"
                       status={fieldState.error ? "error" : ""}
                       onOpenChange={(open) => {
@@ -167,30 +158,30 @@ export default function SemesterForm({
                       options={getSemesterNameOptions(field.value)}
                     />
                     {fieldState.error && (
-                      <Text type="danger">{fieldState.error.message}</Text>
+                      <span className="ui-note">{fieldState.error.message}</span>
                     )}
                   </>
                 )}
               />
             </div>
 
-            <div>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>Select Date Range</Text>
+            <div className={styles.fieldStack}>
+              <span className={`${styles.fieldLabel} ui-label`}>Select Date Range</span>
               <Controller
                 control={control}
                 name="dates"
                 rules={{ required: "Date range is required" }}
                 render={({ field, fieldState }) => (
-                  <div style={{ display: "block" }}>
+                  <>
                     <RangePicker
                       {...field}
                       style={{ width: "100%" }}
                       status={fieldState.error ? "error" : ""}
                     />
                     {fieldState.error && (
-                      <Text type="danger">{fieldState.error.message}</Text>
+                      <span className="ui-note">{fieldState.error.message}</span>
                     )}
-                  </div>
+                  </>
                 )}
               />
             </div>
@@ -202,21 +193,20 @@ export default function SemesterForm({
               name="users"
               render={({ field }) => (
                 <>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
-                    <Text strong>Select Users</Text>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div className={styles.sectionHeader}>
+                    <span className={`${styles.sectionLabel} ui-label`}>Select Users</span>
+                    <div className={styles.inlineActions}>
                       <button
                         type="button"
                         onClick={() => field.onChange(selectableUsers.map((u) => u.id))}
-                        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#15803d", fontWeight: 600 }}
+                        className={styles.textButton}
                       >
                         Select all
                       </button>
-                      <span style={{ color: "#ccc", fontWeight: 300, userSelect: "none" }}>|</span>
                       <button
                         type="button"
                         onClick={() => field.onChange([])}
-                        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "0.8rem", color: "#cf1322", fontWeight: 600 }}
+                        className={`${styles.textButton} ${styles.textButtonDanger}`}
                       >
                         Unselect all
                       </button>
@@ -226,6 +216,7 @@ export default function SemesterForm({
                   {...field}
                   mode="multiple"
                   showSearch
+                  listHeight={400}
                   maxTagCount={12}
                   maxTagPlaceholder={(omitted) => `+${omitted.length} more users`}
                   placeholder="Search and select users..."
@@ -237,21 +228,11 @@ export default function SemesterForm({
                   optionRender={(option) => {
                     const isSelected = (field.value ?? []).includes(option.value as string);
                     return (
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{
-                          fontSize: "0.65rem",
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          padding: "2px 6px",
-                          borderRadius: "3px",
-                          flexShrink: 0,
-                          background: isSelected ? "#dcfce7" : "#fff2f0",
-                          color: isSelected ? "#15803d" : "#cf1322",
-                        }}>
+                      <div className={styles.optionRow}>
+                        <span className={`${styles.optionBadge} ${isSelected ? styles.optionBadgeSelected : ""}`}>
                           {isSelected ? "Selected" : "Unselected"}
                         </span>
-                        <span style={{ fontWeight: 600 }}>{option.label}</span>
+                        <span className={styles.optionName}>{option.label}</span>
                       </div>
                     );
                   }}
@@ -260,39 +241,17 @@ export default function SemesterForm({
               )}
             />
           </div>
-        </Space>
+        </div>
 
-        <Button type="submit" disabled={isSubmitting} className="neo-green" style={{ width: "100%" }}>
+        <div className={styles.submitRow}>
+        <Button type="submit" disabled={isSubmitting} className="accept-button">
           {isSubmitting
             ? "Saving..."
             : semester
               ? "Save Changes"
               : "Create Semester"}
         </Button>
-
-        {semester && isCurrentUserAdmin && onRemove && (
-          <Card
-            title={
-              <Title level={4} type="danger" style={{ margin: 0 }}>
-                Danger Zone
-              </Title>
-            }
-            style={{ borderColor: "#ffa39e", backgroundColor: "#fff2f0" }}
-          >
-            <Space orientation="vertical" style={{ width: "100%" }}>
-              <Text>
-                This permanently removes the semester and all its associated
-                days, productions, and presentations from the database.
-              </Text>
-              <DeleteButton
-                itemName={semester.name + "?"}
-                buttonText="Permanently remove Semester"
-                onConfirm={() => onRemove({ id: semester.id })}
-              />
-            </Space>
-          </Card>
-        )}
-      </Space>
+        </div>
     </form>
   );
 }

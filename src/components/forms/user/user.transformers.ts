@@ -1,4 +1,5 @@
 import { UserInput } from "@/components/forms/schemas";
+import { parseUserLinks } from "@/components/forms/user/user-links";
 
 function formatSemesterCode(name?: string | null) {
   if (!name) return "";
@@ -26,6 +27,7 @@ export const transformUserFromAPI = (user: any): UserInput | null => {
     image: user.image || "/face.jpg",
     email: user.email,
     link: user.link || "",
+    links: parseUserLinks(user.link),
     about: user.about || "",
     role: user.role || "STUDENT",
     semesterIds,

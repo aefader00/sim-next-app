@@ -1,7 +1,10 @@
 "use client";
 
-import { Button, Modal } from "@/components/ui/AntD";
+import { Button } from "@/components/ui/AntD";
+import ConfirmDelete from "@/components/ui/ConfirmDelete";
+import ModalPopup from "@/components/ui/ModalPopup";
 import { useState } from "react";
+import styles from "@/components/ui/ConfirmDelete/ConfirmDelete.module.css";
 
 interface DeleteButtonProps {
   onConfirm: () => void;
@@ -19,38 +22,27 @@ export default function DeleteButton({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
-
-  const handleConfirm = () => {
-    onConfirm();
-    setIsModalOpen(false);
-  };
 
   return (
-    <div style={{ marginTop: "1rem" }}>
-      <Button
-        onClick={showModal}
-      >
+    <div className={styles.triggerRoot}>
+      <Button onClick={showModal} className="decline-button">
         {buttonText} {itemName}
       </Button>
 
-      <Modal
-        title={`Remove ${itemName}`}
+      <ModalPopup
         open={isModalOpen}
-        onOk={handleConfirm}
-        onCancel={handleCancel}
-        okText="Confirm Delete"
-        okButtonProps={{ className: "neo-brutal-button neo-pressable neo-red", style: { border: "none" } }}
-        cancelText="Cancel"
+        onOpenChange={setIsModalOpen}
+        title={`Remove ${itemName}`}
+        dialogClassName={styles.dialog}
       >
-        <p>
-          <strong>
-            Are you sure you want to remove this {itemName.toLowerCase()}?
-          </strong>
-        </p>
-        {warningText && <p>{warningText}</p>}
-        <p>This action cannot be undone.</p>
-      </Modal>
+        <ConfirmDelete
+          itemName={itemName.replace(/\?$/, "")}
+          itemType="item"
+          warningText={warningText}
+          onConfirm={onConfirm}
+          onConfirmed={() => setIsModalOpen(false)}
+        />
+      </ModalPopup>
     </div>
   );
 }

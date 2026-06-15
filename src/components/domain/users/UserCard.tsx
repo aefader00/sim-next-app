@@ -1,22 +1,24 @@
 import Block from "@/components/ui/Block";
 import Image from "next/image";
+import type { MouseEventHandler } from "react";
 import styles from "@/components/domain/users/UserCard.module.css";
 import { normalizeFaceImagePath } from "@/helpers";
 
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 interface UserCardProps {
   user: Pick<User, "id" | "name" | "image" | "role">;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 }
 
-export default function UserCard({ user }: UserCardProps) {
-  const roleLabel = user.role.charAt(0) + user.role.slice(1).toLowerCase();
-
+export default function UserCard({ user, onClick }: UserCardProps) {
   return (
     <Block
       as="a"
-      href={`/users/${user.id}`}
-      className={`${styles.UserCard} neo-pressable neo-brutal-button`}
+      href={`/users?profileUserId=${user.id}`}
+      className={styles.UserCard}
+      onClick={onClick}
+      data-action-mode-target="user-card"
     >
       <div className={styles.cardInner}>
         <div className={styles.imageSection}>
@@ -26,11 +28,13 @@ export default function UserCard({ user }: UserCardProps) {
             fill
             style={{ objectFit: "cover" }}
           />
-          {user.role !== "STUDENT" && <span className={styles.roleLabel}>{roleLabel}</span>}
         </div>
         <div className={styles.nameSection}>
-          <div className={styles.name}>{user.name}</div>
+          <h4 className={styles.name}>{user.name}</h4>
         </div>
+        <span className={styles.actionOverlay} data-user-action-overlay aria-hidden="true">
+          <span className={styles.actionOverlayIcon} />
+        </span>
       </div>
     </Block>
   );

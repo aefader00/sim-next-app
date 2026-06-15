@@ -13,6 +13,7 @@ import {
 	action,
 } from "@/actions/utilities";
 import { UserSchema, UserInput, FilterSchema, FilterInputValues } from "@/components/forms/schemas";
+import { serializeUserLinks } from "@/components/forms/user/user-links";
 import { Prisma } from "@prisma/client";
 
 function normalizeSemesterCode(value?: string | null) {
@@ -216,8 +217,9 @@ export async function editUser(formData: UserInput) {
 			throw new Error(validation.error.issues[0].message);
 		}
 		const validatedFields = validation.data;
-		const { id, name, about, image, email, link, pronouns, role, semesterIds, semesterCodes } = validatedFields;
+		const { id, name, about, image, email, link, links, pronouns, role, semesterIds, semesterCodes } = validatedFields;
 		const hasSemesterCodes = Array.isArray((formData as any).semesterCodes);
+		const serializedLinks = serializeUserLinks(links?.length ? links : link);
 		
 		const { user: currentUser, isAdmin } = await getAuthSession();
 		
@@ -229,7 +231,7 @@ export async function editUser(formData: UserInput) {
 		try {
 			const updatedUser = await prisma.$transaction(async (tx) => {
 				// Only admins can change admin status or semesters
-				const data: Prisma.UserUpdateInput = { name, about, image, link, pronouns, email };
+				const data: Prisma.UserUpdateInput = { name, about, image, link: serializedLinks, pronouns, email };
 				if (isAdmin) {
 					const resolvedSemesterIds = await getSemesterIdsForUserInput(
 						tx,
@@ -248,8 +250,9 @@ export async function editUser(formData: UserInput) {
 					data,
 				});
 			});
-			revalidatePath(`/users/${updatedUser.id}`);
-			revalidatePath("/admin");
+			revalidatePath("/users");
+			revalidatePath("/individual");
+			revalidatePath("/semester");
 			revalidatePath("/thursdays");
 			return updatedUser;
 		} catch (error: any) {
@@ -270,8 +273,9 @@ export async function addUser(formData: UserInput) {
 			throw new Error(validation.error.issues[0].message);
 		}
 		const validatedFields = validation.data;
-		const { semesterIds, semesterCodes, ...userData } = validatedFields;
+		const { semesterIds, semesterCodes, links, link, ...userData } = validatedFields;
 		const hasSemesterCodes = Array.isArray((formData as any).semesterCodes);
+		const serializedLinks = serializeUserLinks(links?.length ? links : link);
 
 		try {
 			const newUser = await prisma.$transaction(async (tx) => {
@@ -284,13 +288,16 @@ export async function addUser(formData: UserInput) {
 				return await tx.user.create({
 					data: {
 						...userData,
+						link: serializedLinks,
 						semesters: {
 							connect: resolvedSemesterIds.map((id) => ({ id })),
 						},
 					},
 				});
 			});
-			revalidatePath("/admin");
+			revalidatePath("/individual");
+			revalidatePath("/users");
+			revalidatePath("/semester");
 			revalidatePath("/thursdays");
 			return newUser;
 		} catch (error: any) {
@@ -310,7 +317,8 @@ export async function removeUser(user: any) {
 			where: { id: user.id },
 		});
 
-		revalidatePath("/admin");
+		revalidatePath("/individual");
+		revalidatePath("/users");
 		return { success: true };
 	});
 }

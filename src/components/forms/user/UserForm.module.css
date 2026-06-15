@@ -4,48 +4,55 @@
 	gap: 1rem;
 }
 
+.adminFields {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 1rem;
+	width: 100%;
+}
+
+.fieldGroup {
+	min-width: 0;
+}
+
+.fieldLabel {
+	display: block;
+	margin-bottom: var(--spacing-sm);
+}
+
+.fieldNote {
+	display: block;
+	margin-top: calc(var(--spacing-sm) / 2);
+}
+
 .semesterRange {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
 	align-items: center;
 	column-gap: 1rem;
-	width: 50%;
+	width: 100%;
 }
 
 .semesterRange :global(.ant-select),
-.semesterRange :global(.neo-brutal-input.ant-select),
-.halfField :global(.ant-select),
-.halfField :global(.neo-brutal-input.ant-select) {
-	width: 100% !important;
-	min-width: 0 !important;
+.fieldGroup :global(.ant-select) {
+	width: 100%;
+	min-width: 0;
 }
 
 .semesterRangeSeparator {
 	font-size: 0.9rem;
 	font-weight: 700;
-	color: #777;
+	color: var(--app-muted);
 	justify-self: center;
 	line-height: 1;
 	white-space: nowrap;
 }
 
-.halfField {
-	width: 50%;
-}
-
 @media (max-width: 600px) {
 	.formGrid,
-	.semesterRange {
+	.adminFields {
 		grid-template-columns: 1fr;
 		width: 100%;
-	}
-
-	.halfField {
-		width: 100%;
-	}
-
-	.semesterRangeSeparator {
-		display: none;
 	}
 }
 

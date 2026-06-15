@@ -1,0 +1,10 @@
+.root {
+	display: contents;
+}
+
+@media print {
+	.root {
+		display: block;
+		overflow: visible;
+	}
+}
