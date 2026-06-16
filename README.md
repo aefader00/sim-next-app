@@ -88,6 +88,7 @@ For production environments (e.g., Ubuntu 24+ with Nginx):
 git pull
 npm install
 npx prisma migrate deploy
+npx prisma generate
 npm run build
 
 # Restart the service
@@ -112,7 +113,7 @@ pg_dump -U sim sim > backup_$(date +%Y%m%d).sql
 
 ---
 
-## aculty Guide
+## Faculty Guide
 
 ### Managing Users
 
